@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+  <import class="ch.qos.logback.core.ConsoleAppender"/>
+  <import class="ch.qos.logback.core.hook.DefaultShutdownHook"/>
+  <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"/>
+  <shutdownHook class="DefaultShutdownHook"/>
+  <appender class="ConsoleAppender" name="STDOUT">
+    <encoder class="PatternLayoutEncoder">
+      <pattern>%level: %msg%n</pattern>
+    </encoder>
+  </appender>
+  <root level="warn">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>
