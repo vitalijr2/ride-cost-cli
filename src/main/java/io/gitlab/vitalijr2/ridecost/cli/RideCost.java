@@ -37,6 +37,9 @@ public class RideCost {
 
   private static final Logger LOGGER = System.getLogger(RideCost.class.getName());
 
+  private RideCost() {
+  }
+
   public static void main(String[] args) {
     try {
       var commander = readParameters(args);
@@ -111,9 +114,6 @@ public class RideCost {
     }
 
     return commander;
-  }
-
-  private RideCost() {
   }
 
 }
