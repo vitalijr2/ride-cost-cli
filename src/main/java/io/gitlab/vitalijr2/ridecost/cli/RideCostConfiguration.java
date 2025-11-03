@@ -26,10 +26,11 @@ import java.math.BigDecimal;
 @Parameters(resourceBundle = "ParameterBundle")
 class RideCostConfiguration {
 
-  @Parameter(converter = BigDecimalConverter.class, descriptionKey = "distance", required = true)
+  @Parameter(converter = BigDecimalConverter.class, descriptionKey = "distance", arity = 1, required = true)
   BigDecimal distance;
 
-  @Parameter(names = {"--price", "-p"}, converter = BigDecimalConverter.class, descriptionKey = "price")
+  @Parameter(names = {"--price",
+      "-p"}, converter = BigDecimalConverter.class, descriptionKey = "price", required = true)
   BigDecimal price;
 
   @Parameter(names = {"--miles-per-gallon", "-m", "--kilometres-per-litre", "-k", "--mpg",

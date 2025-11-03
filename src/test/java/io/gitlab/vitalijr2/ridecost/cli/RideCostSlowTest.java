@@ -1,5 +1,6 @@
 package io.gitlab.vitalijr2.ridecost.cli;
 
+import static java.util.Objects.isNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -115,11 +116,19 @@ class RideCostSlowTest {
     verify(logger).log(Level.DEBUG, "Show help message");
   }
 
-  @DisplayName("Warning message")
-  @Test
-  void warning() {
+  @DisplayName("Warning message: a required parameter")
+  @ParameterizedTest(name = "{1}")
+  @CsvSource(value = {"NIL;The following option is required: [--price | -p]",
+      "123.45;Main parameters are required (\"Distance of the ride, kilometers or miles\")"}, delimiter = ';', nullValues = "NIL")
+  void warningMessage(String price, String expectedMessage) {
     // given
-    var commandLineParameters = new String[0];
+    String[] commandLineParameters;
+
+    if (isNull(price)) {
+      commandLineParameters = new String[0];
+    } else {
+      commandLineParameters = new String[]{"-p", price};
+    }
 
     // when
     assertDoesNotThrow(() -> RideCost.main(commandLineParameters));
@@ -127,7 +136,7 @@ class RideCostSlowTest {
     // then
     var logger = System.getLogger(RideCost.class.getName());
 
-    verify(logger).log(Level.WARNING, "Main parameters are required (\"Distance of the ride, kilometers or miles\")");
+    verify(logger).log(Level.WARNING, expectedMessage);
   }
 
 }
