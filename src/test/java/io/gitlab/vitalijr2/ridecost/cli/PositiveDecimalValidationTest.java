@@ -37,7 +37,8 @@ public class PositiveDecimalValidationTest {
 
   @DisplayName("Distance must be positive")
   @ParameterizedTest(name = "{0}")
-  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0", "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
+  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0",
+      "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void distanceMustBePositive(double distance, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(distance);
@@ -54,7 +55,8 @@ public class PositiveDecimalValidationTest {
 
   @DisplayName("Price must be positive")
   @ParameterizedTest(name = "{0}")
-  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0", "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
+  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0",
+      "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void priceMustBePositive(double price, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
@@ -71,7 +73,8 @@ public class PositiveDecimalValidationTest {
 
   @DisplayName("Distance-per-volume mileage must be positive")
   @ParameterizedTest(name = "{0}")
-  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0", "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
+  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0",
+      "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void distancePerVolumeMileageMustBePositive(double mileage, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
@@ -88,7 +91,8 @@ public class PositiveDecimalValidationTest {
 
   @DisplayName("Volume-per-distance mileage must be positive")
   @ParameterizedTest(name = "{0}")
-  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0", "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
+  @CsvSource(value = {"0.0|Must be a positive value, but got 0.0",
+      "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void volumePerDistanceMileageMustBePositive(double mileage, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
