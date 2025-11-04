@@ -140,7 +140,9 @@
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-          <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+          <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}
+            -javaagent:${com.ginsberg:junit5-system-exit:jar}
+          </argLine>
           <forkCount>1</forkCount>
           <includes>
             <include>**/*Test.java</include>
@@ -149,6 +151,9 @@
             <groups>slow</groups>
           </properties>
           <reuseForks>false</reuseForks>
+          <systemPropertyVariables>
+            <maven.project.version>${project.version}</maven.project.version>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -194,6 +199,19 @@
         <version>3.5.4</version>
       </plugin>
       <plugin>
+        <artifactId>templating-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+            <id>filter-sources</id>
+          </execution>
+        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>3.0.0</version>
+      </plugin>
+      <plugin>
         <artifactId>semver-maven-plugin</artifactId>
         <configuration>
           <processModule>true</processModule>
@@ -221,11 +239,6 @@
       <version>3.0</version>
     </dependency>
     <dependency>
-      <artifactId>jcommander</artifactId>
-      <groupId>org.jcommander</groupId>
-      <version>3.0</version>
-    </dependency>
-    <dependency>
       <artifactId>junit-jupiter-api</artifactId>
       <groupId>org.junit.jupiter</groupId>
       <scope>test</scope>
@@ -236,6 +249,12 @@
       <groupId>org.junit.jupiter</groupId>
       <scope>test</scope>
       <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>junit5-system-exit</artifactId>
+      <groupId>com.ginsberg</groupId>
+      <scope>test</scope>
+      <version>2.0.2</version>
     </dependency>
     <dependency>
       <artifactId>mockito-core</artifactId>
@@ -260,6 +279,11 @@
       <groupId>io.github.vitalijr2.logging</groupId>
       <scope>test</scope>
       <version>${mock-loggers.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>picocli</artifactId>
+      <groupId>info.picocli</groupId>
+      <version>4.7.7</version>
     </dependency>
     <dependency>
       <artifactId>ride-cost-estimator</artifactId>
@@ -320,204 +344,11 @@
             <groupId>org.apache.maven.plugins</groupId>
           </plugin>
         </plugins>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>src/main/elf4j</directory>
-          </resource>
-        </resources>
       </build>
-      <dependencies>
-        <dependency>
-          <artifactId>jpl-elf4j</artifactId>
-          <groupId>io.github.elf4j</groupId>
-          <version>8.2.1</version>
-        </dependency>
-        <dependency>
-          <artifactId>elf4j-provider</artifactId>
-          <groupId>io.github.elf4j</groupId>
-          <version>16.0.3</version>
-        </dependency>
-      </dependencies>
-      <id>prepare-package-with-elf4j</id>
-    </profile>
-    <profile>
-      <build>
-        <defaultGoal>clean package</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <configuration>
-                  <includeScope>runtime</includeScope>
-                </configuration>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-              </execution>
-            </executions>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-        </plugins>
-      </build>
-      <id>prepare-package-with-jul</id>
-    </profile>
-    <profile>
-      <build>
-        <defaultGoal>clean package</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <configuration>
-                  <includeScope>runtime</includeScope>
-                </configuration>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-              </execution>
-            </executions>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-        </plugins>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>src/main/logback</directory>
-          </resource>
-        </resources>
-      </build>
-      <dependencies>
-        <dependency>
-          <artifactId>slf4j-jdk-platform-logging</artifactId>
-          <groupId>org.slf4j</groupId>
-          <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-          <artifactId>logback-classic</artifactId>
-          <groupId>ch.qos.logback</groupId>
-          <version>1.5.20</version>
-        </dependency>
-      </dependencies>
-      <id>prepare-package-with-logback</id>
-    </profile>
-    <profile>
-      <build>
-        <defaultGoal>clean package</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <configuration>
-                  <includeScope>runtime</includeScope>
-                </configuration>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-              </execution>
-            </executions>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-        </plugins>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>src/main/slf4j</directory>
-          </resource>
-        </resources>
-      </build>
-      <dependencies>
-        <dependency>
-          <artifactId>slf4j-jdk-platform-logging</artifactId>
-          <groupId>org.slf4j</groupId>
-          <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-          <artifactId>slf4j-simple</artifactId>
-          <groupId>org.slf4j</groupId>
-          <version>${slf4j.version}</version>
-        </dependency>
-      </dependencies>
-      <id>prepare-package-with-slf4j</id>
-    </profile>
-    <profile>
-      <build>
-        <defaultGoal>clean package</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <configuration>
-                  <includeScope>runtime</includeScope>
-                </configuration>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-              </execution>
-            </executions>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-        </plugins>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>src/main/tinylog</directory>
-          </resource>
-        </resources>
-      </build>
-      <dependencies>
-        <dependency>
-          <artifactId>jsl-tinylog</artifactId>
-          <groupId>org.tinylog</groupId>
-          <version>${tinylog.version}</version>
-        </dependency>
-        <dependency>
-          <artifactId>tinylog-impl</artifactId>
-          <groupId>org.tinylog</groupId>
-          <version>${tinylog.version}</version>
-        </dependency>
-      </dependencies>
-      <id>prepare-package-with-tinylog</id>
+      <!--
+       Prepare main jar with dependency ones
+      -->
+      <id>prepare-package</id>
     </profile>
     <profile>
       <build>
@@ -573,8 +404,6 @@
     <mock-loggers.version>2.0.0</mock-loggers.version>
     <mockito.version>5.20.0</mockito.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j.version>2.0.17</slf4j.version>
-    <tinylog.version>2.7.0</tinylog.version>
   </properties>
   <scm>
     <connection>scm:git:https://gitlab.com/ride-cost/ride-cost-cli.git</connection>
