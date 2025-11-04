@@ -1,5 +1,7 @@
 package io.gitlab.vitalijr2.ridecost.cli;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -17,6 +19,7 @@ class MainTest {
 
     // when
     RideCost.main(commandLineParameters);
+    fail("Should have been executed");
   }
 
   @DisplayName("Missing argument")
@@ -28,6 +31,7 @@ class MainTest {
 
     // when
     RideCost.main(commandLineParameters);
+    fail("Should have been executed");
   }
 
 }
