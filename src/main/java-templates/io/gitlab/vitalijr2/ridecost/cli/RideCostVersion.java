@@ -19,14 +19,13 @@
  */
 package io.gitlab.vitalijr2.ridecost.cli;
 
-import com.beust.jcommander.IStringConverter;
-import java.math.BigDecimal;
+import picocli.CommandLine.IVersionProvider;
 
-public class BigDecimalConverter implements IStringConverter<BigDecimal> {
+public class RideCostVersion implements IVersionProvider {
 
   @Override
-  public BigDecimal convert(String value) {
-    return new BigDecimal(value);
+  public String[] getVersion() throws Exception {
+    return new String[]{"${COMMAND-FULL-NAME} @project.version@"};
   }
 
 }
