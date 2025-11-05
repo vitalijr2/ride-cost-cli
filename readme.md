@@ -12,6 +12,33 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 ![GitLab last commit][gitlab-last-commit]
 [![Today's hits][today-hits]][today-hits-link]
 
+## How to use
+
+### How to run
+
+To calculate the estimated ride cost, provide the fuel efficiency ratio, fuel price, and distance:
+
+```bash
+ridecost -l 6.3 -p 64.99 475
+```
+
+where:
+
+- **6.3** - fuel efficiency ratio, in litres per 100 kilometres,
+- **64.99** - fuel price,
+- **475** - distance to the destination.
+
+Of course, you could use another ratios: miles per gallon, kilometres per litre, gallons per 100 miles.
+
+Full list of options see on the screenshot:
+![Usage](ridecost.png)
+
+### Where to get
+
+### Archlinux
+
+Just install the AUR package [ridecost][ridecost-AUR] ☺
+
 ## Contributing
 
 Please read [Contributing](contributing.md).
@@ -69,3 +96,5 @@ See full text [here](LICENSE "the LICENSE file").
 [today-hits]: https://hits.sh/github.com/vitalijr2/ride-cost-cli.svg?view=today-total&label=today's%20hits
 
 [today-hits-link]: https://hits.sh/github.com/vitalijr2/ride-cost-cli/
+
+[ridecost-AUR]: https://aur.archlinux.org/packages/ridecost/
