@@ -20,63 +20,90 @@
 package io.gitlab.vitalijr2.ridecost.cli;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 import io.gitlab.vitalijr2.ridecost.estimator.RideCostEstimator;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import org.jetbrains.annotations.NotNull;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.VisibleForTesting;
+import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
-public class RideCost {
+@Command(name = "ridecost", mixinStandardHelpOptions = true, requiredOptionMarker = '*', versionProvider = RideCostVersion.class)
+public class RideCost implements Runnable {
 
   private static final Logger LOGGER = System.getLogger(RideCost.class.getName());
+  private static final ResourceBundle COMMAND_LINE_BUNDLE = ResourceBundle.getBundle("CommandLineBundle");
+
+  @Spec
+  CommandSpec spec;
+
+  @Parameters(index = "0", paramLabel = "DISTANCE", descriptionKey = "distance", arity = "1")
+  BigDecimal distance;
+
+  @Option(names = {"--price", "-p"}, paramLabel = "PRICE", descriptionKey = "price", required = true)
+  BigDecimal price;
+
+  @ArgGroup(exclusive = true, multiplicity = "1")
+  Mileage mileage;
+
+  @Option(names = "-0", descriptionKey = "round.zero")
+  boolean zeroDigits;
+
+  @Option(names = "-2", descriptionKey = "round.two")
+  boolean twoDigits;
+
+  @Option(names = "-3", descriptionKey = "round.three")
+  boolean threeDigits;
+
+  @Option(names = "-4", descriptionKey = "round.four")
+  boolean fourDigits;
 
   public static void main(String[] args) {
-    try {
-      var commander = readParameters(args);
-      var configuration = (RideCostConfiguration) commander.getObjects().get(0);
+    var commandLine = new CommandLine(new RideCost());
 
-      if (configuration.usage) {
-        commander.usage();
-        return;
-      }
-      System.out.println(estimateRideCost(configuration));
-    } catch (ParameterException parameterException) {
-      LOGGER.log(Level.WARNING, parameterException.getMessage());
-      parameterException.usage();
-    }
+    commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
+    System.exit(commandLine.execute(args));
+  }
+
+  @Override
+  public void run() {
+    validatePositiveDecimals();
+    System.out.println(estimateRideCost());
   }
 
   @VisibleForTesting
-  @NotNull
-  static BigDecimal estimateRideCost(RideCostConfiguration configuration) {
+  BigDecimal estimateRideCost() {
     BigDecimal cost;
 
-    if (isNull(configuration.mileageVolumePerDistance)) {
+    if (isNull(mileage.volumePerDistance)) {
       cost = RideCostEstimator.distanceByVolumeEstimator()
-          .estimateCostOfRide(configuration.mileageDistancePerVolume, configuration.price, configuration.distance);
+          .estimateCostOfRide(mileage.distancePerVolume, price, distance);
       LOGGER.log(Level.DEBUG, "Estimated cost for distance per volume is " + cost);
     } else {
       cost = RideCostEstimator.volumeByDistanceEstimator()
-          .estimateCostOfRide(configuration.mileageVolumePerDistance, configuration.price, configuration.distance);
+          .estimateCostOfRide(mileage.volumePerDistance, price, distance);
       LOGGER.log(Level.DEBUG, "Estimated cost for volume per distance is " + cost);
     }
-    if (configuration.zeroDigits) {
+    if (zeroDigits) {
       cost = cost.setScale(0, RoundingMode.HALF_UP);
       LOGGER.log(Level.DEBUG, "Round to a whole number: {0}", cost);
-    } else if (configuration.twoDigits) {
+    } else if (twoDigits) {
       cost = cost.setScale(2, RoundingMode.HALF_UP);
       LOGGER.log(Level.DEBUG, "Round to two digits: {0}", cost);
-    } else if (configuration.threeDigits) {
+    } else if (threeDigits) {
       cost = cost.setScale(3, RoundingMode.HALF_UP);
       LOGGER.log(Level.DEBUG, "Round to three digits: {0}", cost);
-    } else if (configuration.fourDigits) {
+    } else if (fourDigits) {
       cost = cost.setScale(4, RoundingMode.HALF_UP);
       LOGGER.log(Level.DEBUG, "Round to four digits: {0}", cost);
     }
@@ -84,36 +111,26 @@ public class RideCost {
     return cost;
   }
 
-  @VisibleForTesting
-  @NotNull
-  static JCommander readParameters(String[] args) throws ParameterException {
-    var commander = JCommander.newBuilder().addObject(new RideCostConfiguration()).programName(RideCost.class.getName())
-        .args(args).build();
-    var configuration = (RideCostConfiguration) commander.getObjects().get(0);
-    var parameterBundle = ResourceBundle.getBundle("ParameterBundle");
-
-    if (configuration.usage) {
-      LOGGER.log(Level.DEBUG, "Show help message");
-      return commander;
-    }
-    if (nonNull(configuration.mileageDistancePerVolume) && nonNull(configuration.mileageVolumePerDistance)) {
-      var parameterException = new ParameterException(
-          parameterBundle.getString("exclusive.two-mileages-simultaneously"));
-
-      parameterException.setJCommander(commander);
-      throw parameterException;
-    }
-    if (isNull(configuration.mileageDistancePerVolume) && isNull(configuration.mileageVolumePerDistance)) {
-      var parameterException = new ParameterException(parameterBundle.getString("required.any-mileage"));
-
-      parameterException.setJCommander(commander);
-      throw parameterException;
-    }
-
-    return commander;
+  private void validatePositiveDecimals() {
+    Stream.of(distance, price, mileage.distancePerVolume, mileage.volumePerDistance).filter(Objects::nonNull)
+        .forEach((value) -> {
+          if (value.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new NonPositiveDecimalException(spec.commandLine(),
+                String.format(COMMAND_LINE_BUNDLE.getString("value.non-positive"), value));
+          }
+        });
   }
 
-  private RideCost() {
+  static class Mileage {
+
+    @Option(names = {"--miles-per-gallon", "-m", "--kilometres-per-litre", "-k", "--mpg",
+        "--kpl"}, paramLabel = "RATIO", descriptionKey = "mileage.distance-per-volume")
+    BigDecimal distancePerVolume;
+
+    @Option(names = {"--litres-per-ton-kilometres", "-l", "--gallons-per-ton-miles",
+        "-g"}, paramLabel = "RATIO", descriptionKey = "mileage.volume-per-distance")
+    BigDecimal volumePerDistance;
+
   }
 
 }
