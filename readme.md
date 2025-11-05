@@ -30,7 +30,7 @@ where:
 
 Of course, you could use another ratios: miles per gallon, kilometres per litre, gallons per 100 miles.
 
-Full list of options see on the screenshot:
+Full list of options see on the screenshot:  
 ![Usage](ridecost.png)
 
 ### Where to get
