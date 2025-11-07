@@ -8,9 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 
+import io.github.vitalijr2.logging.mock.MockLoggers;
 import java.io.File;
 import java.io.IOException;
+import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -20,6 +23,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mockito;
 
 @Tag("slow")
+@MockLoggers
 class StateFileTest {
 
   @DisplayName("The state file in .local/state")
@@ -85,6 +89,9 @@ class StateFileTest {
       var instance = assertDoesNotThrow(RideCost::new);
 
       // then
+      var logger = System.getLogger(RideCost.class.getName());
+
+      verify(logger).log(Level.WARNING, "src/test/resources (Is a directory)");
       assertAll("Clean bean", () -> assertNull(instance.mileage.distancePerVolume),
           () -> assertNull(instance.mileage.volumePerDistance), () -> assertNull(instance.price),
           () -> assertFalse(instance.zeroDigits), () -> assertFalse(instance.twoDigits),

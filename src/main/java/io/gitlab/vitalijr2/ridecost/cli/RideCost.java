@@ -79,7 +79,7 @@ public class RideCost implements Runnable {
     try {
       loadSavedState();
     } catch (IOException exception) {
-      LOGGER.log(Level.WARNING, exception.getMessage(), exception);
+      LOGGER.log(Level.WARNING, exception.getMessage());
     }
   }
 
