@@ -115,36 +115,9 @@ public class RideCost implements Runnable {
     var stateProperties = new Properties();
 
     stateProperties.load(new FileReader(stateFile));
-    if (stateProperties.containsKey("distancePerVolume")) {
-      mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
-      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
-    } else if (stateProperties.containsKey("volumePerDistance")) {
-      mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
-      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
-    }
-    if (stateProperties.containsKey("price")) {
-      price = new BigDecimal(stateProperties.getProperty("price"));
-      LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
-    }
-    switch ((String) stateProperties.getOrDefault("roundTo", "-1")) {
-      case "0" -> {
-        zeroDigits = true;
-        LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
-      }
-      case "2" -> {
-        twoDigits = true;
-        LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
-      }
-      case "3" -> {
-        threeDigits = true;
-        LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
-      }
-      case "4" -> {
-        fourDigits = true;
-        LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
-      }
-      default -> LOGGER.log(Level.DEBUG, "Exact value is used");
-    }
+    restoreMileage(stateProperties);
+    restorePrice(stateProperties);
+    restoreRounding(stateProperties);
   }
 
   @Override
@@ -181,6 +154,45 @@ public class RideCost implements Runnable {
     }
 
     return cost;
+  }
+
+  private void restoreMileage(Properties stateProperties) {
+    if (stateProperties.containsKey("distancePerVolume")) {
+      mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
+    } else if (stateProperties.containsKey("volumePerDistance")) {
+      mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
+    }
+  }
+
+  private void restorePrice(Properties stateProperties) {
+    if (stateProperties.containsKey("price")) {
+      price = new BigDecimal(stateProperties.getProperty("price"));
+      LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
+    }
+  }
+
+  private void restoreRounding(Properties stateProperties) {
+    switch (stateProperties.getProperty("roundTo", "*")) {
+      case "0" -> {
+        zeroDigits = true;
+        LOGGER.log(Level.DEBUG, "Restore rounding to zero digits");
+      }
+      case "2" -> {
+        twoDigits = true;
+        LOGGER.log(Level.DEBUG, "Restore rounding to two digits");
+      }
+      case "3" -> {
+        threeDigits = true;
+        LOGGER.log(Level.DEBUG, "Restore rounding to three digits");
+      }
+      case "4" -> {
+        fourDigits = true;
+        LOGGER.log(Level.DEBUG, "Restore rounding to four digits");
+      }
+      default -> LOGGER.log(Level.DEBUG, "Exact value is used");
+    }
   }
 
   private void validatePositiveDecimals() {
