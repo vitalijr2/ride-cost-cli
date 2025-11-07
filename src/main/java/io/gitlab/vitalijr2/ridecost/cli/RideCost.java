@@ -96,18 +96,35 @@ public class RideCost implements Runnable {
         stateProperties.load(new FileReader(stateFile));
         if (stateProperties.containsKey("distancePerVolume")) {
           instance.mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+          LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", instance.mileage.distancePerVolume);
         } else if (stateProperties.containsKey("volumePerDistance")) {
           instance.mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+          LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", instance.mileage.volumePerDistance);
         }
         if (stateProperties.containsKey("price")) {
           instance.price = new BigDecimal(stateProperties.getProperty("price"));
+          LOGGER.log(Level.DEBUG, "Saved price: {0}", instance.price);
         }
         if (stateProperties.containsKey("roundTo")) {
           switch (stateProperties.getProperty("roundTo")) {
-            case "0" -> instance.zeroDigits = true;
-            case "2" -> instance.twoDigits = true;
-            case "3" -> instance.threeDigits = true;
-            case "4" -> instance.fourDigits = true;
+            case "0":
+              instance.zeroDigits = true;
+              LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
+              break;
+            case "2":
+              instance.twoDigits = true;
+              LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
+              break;
+            case "3":
+              instance.threeDigits = true;
+              LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
+              break;
+            case "4":
+              instance.fourDigits = true;
+              LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
+              break;
+            default:
+              LOGGER.log(Level.DEBUG, "Exact value is used");
           }
         }
       }

@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,51 +53,24 @@ class StateFileTest {
       var instance = RideCost.getInstance();
 
       // then
-      if (isNull(expectedDistancePerVolume)) {
-        assertNull(instance.mileage.distancePerVolume);
-      } else {
-        assertEquals(expectedDistancePerVolume, instance.mileage.distancePerVolume);
-      }
-      if (isNull(expectedVolumePerDistance)) {
-        assertNull(instance.mileage.volumePerDistance);
-      } else {
-        assertEquals(expectedVolumePerDistance, instance.mileage.volumePerDistance);
-      }
-      if (isNull(expectedPrice)) {
-        assertNull(instance.price);
-      } else {
-        assertEquals(expectedPrice, instance.price);
-      }
+      checkBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.mileage.distancePerVolume);
+      checkBigDecimalIsNullOrExactValue(expectedVolumePerDistance, instance.mileage.volumePerDistance);
+      checkBigDecimalIsNullOrExactValue(expectedPrice, instance.price);
       switch (expectedRoundTo) {
         case 0:
-          assertTrue(instance.zeroDigits);
-          assertFalse(instance.twoDigits);
-          assertFalse(instance.threeDigits);
-          assertFalse(instance.fourDigits);
+          checkRoundTo(instance, true, false, false, false);
           break;
         case 2:
-          assertFalse(instance.zeroDigits);
-          assertTrue(instance.twoDigits);
-          assertFalse(instance.threeDigits);
-          assertFalse(instance.fourDigits);
+          checkRoundTo(instance, false, true, false, false);
           break;
         case 3:
-          assertFalse(instance.zeroDigits);
-          assertFalse(instance.twoDigits);
-          assertTrue(instance.threeDigits);
-          assertFalse(instance.fourDigits);
+          checkRoundTo(instance, false, false, true, false);
           break;
         case 4:
-          assertFalse(instance.zeroDigits);
-          assertFalse(instance.twoDigits);
-          assertFalse(instance.threeDigits);
-          assertTrue(instance.fourDigits);
+          checkRoundTo(instance, false, false, false, true);
           break;
         default:
-          assertFalse(instance.zeroDigits);
-          assertFalse(instance.twoDigits);
-          assertFalse(instance.threeDigits);
-          assertFalse(instance.fourDigits);
+          checkRoundTo(instance, false, false, false, false);
           break;
       }
     }
@@ -120,6 +92,22 @@ class StateFileTest {
           () -> assertFalse(instance.zeroDigits), () -> assertFalse(instance.twoDigits),
           () -> assertFalse(instance.threeDigits), () -> assertFalse(instance.fourDigits));
     }
+  }
+
+  private void checkBigDecimalIsNullOrExactValue(BigDecimal expectedValue, BigDecimal actualValue) {
+    if (isNull(expectedValue)) {
+      assertNull(actualValue);
+    } else {
+      assertEquals(expectedValue, actualValue);
+    }
+  }
+
+  private void checkRoundTo(RideCost instance, boolean expectedZeroDigits, boolean expectedTwoDigits,
+      boolean expectedThreeDigits, boolean expectedFourDigits) {
+    assertEquals(expectedZeroDigits, instance.zeroDigits);
+    assertEquals(expectedTwoDigits, instance.twoDigits);
+    assertEquals(expectedThreeDigits, instance.threeDigits);
+    assertEquals(expectedFourDigits, instance.fourDigits);
   }
 
 }
