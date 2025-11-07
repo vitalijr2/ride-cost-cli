@@ -47,10 +47,9 @@ class StateFileTest {
     // given
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
       ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources/" + name + ".properties"));
-      ridecost.when(RideCost::getInstance).thenCallRealMethod();
 
       // when
-      var instance = RideCost.getInstance();
+      var instance = new RideCost();
 
       // then
       assertBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.mileage.distancePerVolume);
@@ -81,10 +80,9 @@ class StateFileTest {
   void exception() {
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
       ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources"));
-      ridecost.when(RideCost::getInstance).thenCallRealMethod();
 
       // when
-      var instance = assertDoesNotThrow(RideCost::getInstance);
+      var instance = assertDoesNotThrow(RideCost::new);
 
       // then
       assertAll("Clean bean", () -> assertNull(instance.mileage.distancePerVolume),

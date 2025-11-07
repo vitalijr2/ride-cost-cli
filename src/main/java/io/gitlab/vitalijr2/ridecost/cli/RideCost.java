@@ -73,64 +73,22 @@ public class RideCost implements Runnable {
   @Option(names = "-4", descriptionKey = "round.four")
   boolean fourDigits;
 
-  public static void main(String[] args) {
-    var commandLine = new CommandLine(getInstance());
-
-    commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
-    System.exit(commandLine.execute(args));
-  }
-
-  @VisibleForTesting
-  @NotNull
-  static RideCost getInstance() {
-    var instance = new RideCost();
-
-    instance.mileage = new Mileage();
+  public RideCost() {
+    mileage = new Mileage();
 
     try {
-      var stateFile = getStateFile();
-
-      if (stateFile.exists()) {
-        var stateProperties = new Properties();
-
-        stateProperties.load(new FileReader(stateFile));
-        if (stateProperties.containsKey("distancePerVolume")) {
-          instance.mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
-          LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", instance.mileage.distancePerVolume);
-        } else if (stateProperties.containsKey("volumePerDistance")) {
-          instance.mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
-          LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", instance.mileage.volumePerDistance);
-        }
-        if (stateProperties.containsKey("price")) {
-          instance.price = new BigDecimal(stateProperties.getProperty("price"));
-          LOGGER.log(Level.DEBUG, "Saved price: {0}", instance.price);
-        }
-        switch ((String) stateProperties.getOrDefault("roundTo", "-1")) {
-          case "0":
-            instance.zeroDigits = true;
-            LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
-            break;
-          case "2":
-            instance.twoDigits = true;
-            LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
-            break;
-          case "3":
-            instance.threeDigits = true;
-            LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
-            break;
-          case "4":
-            instance.fourDigits = true;
-            LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
-            break;
-          default:
-            LOGGER.log(Level.DEBUG, "Exact value is used");
-        }
-      }
+      loadSavedState();
     } catch (IOException exception) {
       LOGGER.log(Level.WARNING, exception.getMessage(), exception);
     }
 
-    return instance;
+  }
+
+  public static void main(String[] args) {
+    var commandLine = new CommandLine(new RideCost());
+
+    commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
+    System.exit(commandLine.execute(args));
   }
 
   @VisibleForTesting
@@ -145,6 +103,48 @@ public class RideCost implements Runnable {
     var stateFolder = System.getenv().getOrDefault(stateFolderName, System.getProperty("user.home") + "/.local/state");
 
     return new File(stateFolder, "ridecost.properties");
+  }
+
+  @VisibleForTesting
+  private void loadSavedState() throws IOException {
+    var stateFile = getStateFile();
+
+    if (stateFile.exists()) {
+      var stateProperties = new Properties();
+
+      stateProperties.load(new FileReader(stateFile));
+      if (stateProperties.containsKey("distancePerVolume")) {
+        mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+        LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
+      } else if (stateProperties.containsKey("volumePerDistance")) {
+        mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+        LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
+      }
+      if (stateProperties.containsKey("price")) {
+        price = new BigDecimal(stateProperties.getProperty("price"));
+        LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
+      }
+      switch ((String) stateProperties.getOrDefault("roundTo", "-1")) {
+        case "0":
+          zeroDigits = true;
+          LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
+          break;
+        case "2":
+          twoDigits = true;
+          LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
+          break;
+        case "3":
+          threeDigits = true;
+          LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
+          break;
+        case "4":
+          fourDigits = true;
+          LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
+          break;
+        default:
+          LOGGER.log(Level.DEBUG, "Exact value is used");
+      }
+    }
   }
 
   @Override
