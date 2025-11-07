@@ -53,24 +53,24 @@ class StateFileTest {
       var instance = RideCost.getInstance();
 
       // then
-      checkBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.mileage.distancePerVolume);
-      checkBigDecimalIsNullOrExactValue(expectedVolumePerDistance, instance.mileage.volumePerDistance);
-      checkBigDecimalIsNullOrExactValue(expectedPrice, instance.price);
+      assertBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.mileage.distancePerVolume);
+      assertBigDecimalIsNullOrExactValue(expectedVolumePerDistance, instance.mileage.volumePerDistance);
+      assertBigDecimalIsNullOrExactValue(expectedPrice, instance.price);
       switch (expectedRoundTo) {
         case 0:
-          checkRoundTo(instance, true, false, false, false);
+          assertRoundTo(instance, true, false, false, false);
           break;
         case 2:
-          checkRoundTo(instance, false, true, false, false);
+          assertRoundTo(instance, false, true, false, false);
           break;
         case 3:
-          checkRoundTo(instance, false, false, true, false);
+          assertRoundTo(instance, false, false, true, false);
           break;
         case 4:
-          checkRoundTo(instance, false, false, false, true);
+          assertRoundTo(instance, false, false, false, true);
           break;
         default:
-          checkRoundTo(instance, false, false, false, false);
+          assertRoundTo(instance, false, false, false, false);
           break;
       }
     }
@@ -94,7 +94,7 @@ class StateFileTest {
     }
   }
 
-  private void checkBigDecimalIsNullOrExactValue(BigDecimal expectedValue, BigDecimal actualValue) {
+  private void assertBigDecimalIsNullOrExactValue(BigDecimal expectedValue, BigDecimal actualValue) {
     if (isNull(expectedValue)) {
       assertNull(actualValue);
     } else {
@@ -102,7 +102,7 @@ class StateFileTest {
     }
   }
 
-  private void checkRoundTo(RideCost instance, boolean expectedZeroDigits, boolean expectedTwoDigits,
+  private void assertRoundTo(RideCost instance, boolean expectedZeroDigits, boolean expectedTwoDigits,
       boolean expectedThreeDigits, boolean expectedFourDigits) {
     assertEquals(expectedZeroDigits, instance.zeroDigits);
     assertEquals(expectedTwoDigits, instance.twoDigits);
