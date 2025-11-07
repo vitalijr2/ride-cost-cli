@@ -108,7 +108,7 @@ public class RideCost implements Runnable {
   private void loadSavedState() throws IOException {
     var stateFile = getStateFile();
 
-    if (stateFile.exists()) {
+    if (!stateFile.exists()) {
       return;
     }
 
