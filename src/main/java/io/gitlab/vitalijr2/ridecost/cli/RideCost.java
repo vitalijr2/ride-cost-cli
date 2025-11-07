@@ -22,13 +22,18 @@ package io.gitlab.vitalijr2.ridecost.cli;
 import static java.util.Objects.isNull;
 
 import io.gitlab.vitalijr2.ridecost.estimator.RideCostEstimator;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -69,10 +74,62 @@ public class RideCost implements Runnable {
   boolean fourDigits;
 
   public static void main(String[] args) {
-    var commandLine = new CommandLine(new RideCost());
+    var commandLine = new CommandLine(getInstance());
 
     commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
     System.exit(commandLine.execute(args));
+  }
+
+  @VisibleForTesting
+  @NotNull
+  static RideCost getInstance() {
+    var instance = new RideCost();
+
+    instance.mileage = new Mileage();
+
+    try {
+      var stateFile = getStateFile();
+
+      if (stateFile.exists()) {
+        var stateProperties = new Properties();
+
+        stateProperties.load(new FileReader(stateFile));
+        if (stateProperties.containsKey("distancePerVolume")) {
+          instance.mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+        } else if (stateProperties.containsKey("volumePerDistance")) {
+          instance.mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+        }
+        if (stateProperties.containsKey("price")) {
+          instance.price = new BigDecimal(stateProperties.getProperty("price"));
+        }
+        if (stateProperties.containsKey("roundTo")) {
+          switch (stateProperties.getProperty("roundTo")) {
+            case "0" -> instance.zeroDigits = true;
+            case "2" -> instance.twoDigits = true;
+            case "3" -> instance.threeDigits = true;
+            case "4" -> instance.fourDigits = true;
+          }
+        }
+      }
+    } catch (IOException exception) {
+      LOGGER.log(Level.WARNING, exception.getMessage(), exception);
+    }
+
+    return instance;
+  }
+
+  @VisibleForTesting
+  @NotNull
+  static File getStateFile() {
+    return getStateFile("XDG_STATE_HOME");
+  }
+
+  @VisibleForTesting
+  @NotNull
+  static File getStateFile(String stateFolderName) {
+    var stateFolder = System.getenv().getOrDefault(stateFolderName, System.getProperty("user.home") + "/.local/state");
+
+    return new File(stateFolder, "ridecost.properties");
   }
 
   @Override
