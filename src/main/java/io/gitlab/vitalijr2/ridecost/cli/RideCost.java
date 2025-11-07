@@ -81,7 +81,6 @@ public class RideCost implements Runnable {
     } catch (IOException exception) {
       LOGGER.log(Level.WARNING, exception.getMessage(), exception);
     }
-
   }
 
   public static void main(String[] args) {
@@ -110,40 +109,41 @@ public class RideCost implements Runnable {
     var stateFile = getStateFile();
 
     if (stateFile.exists()) {
-      var stateProperties = new Properties();
+      return;
+    }
 
-      stateProperties.load(new FileReader(stateFile));
-      if (stateProperties.containsKey("distancePerVolume")) {
-        mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
-        LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
-      } else if (stateProperties.containsKey("volumePerDistance")) {
-        mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
-        LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
+    var stateProperties = new Properties();
+
+    stateProperties.load(new FileReader(stateFile));
+    if (stateProperties.containsKey("distancePerVolume")) {
+      mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
+    } else if (stateProperties.containsKey("volumePerDistance")) {
+      mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
+    }
+    if (stateProperties.containsKey("price")) {
+      price = new BigDecimal(stateProperties.getProperty("price"));
+      LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
+    }
+    switch ((String) stateProperties.getOrDefault("roundTo", "-1")) {
+      case "0" -> {
+        zeroDigits = true;
+        LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
       }
-      if (stateProperties.containsKey("price")) {
-        price = new BigDecimal(stateProperties.getProperty("price"));
-        LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
+      case "2" -> {
+        twoDigits = true;
+        LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
       }
-      switch ((String) stateProperties.getOrDefault("roundTo", "-1")) {
-        case "0":
-          zeroDigits = true;
-          LOGGER.log(Level.DEBUG, "Saved rounding to zero digits");
-          break;
-        case "2":
-          twoDigits = true;
-          LOGGER.log(Level.DEBUG, "Saved rounding to two digits");
-          break;
-        case "3":
-          threeDigits = true;
-          LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
-          break;
-        case "4":
-          fourDigits = true;
-          LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
-          break;
-        default:
-          LOGGER.log(Level.DEBUG, "Exact value is used");
+      case "3" -> {
+        threeDigits = true;
+        LOGGER.log(Level.DEBUG, "Saved rounding to three digits");
       }
+      case "4" -> {
+        fourDigits = true;
+        LOGGER.log(Level.DEBUG, "Saved rounding to four digits");
+      }
+      default -> LOGGER.log(Level.DEBUG, "Exact value is used");
     }
   }
 
