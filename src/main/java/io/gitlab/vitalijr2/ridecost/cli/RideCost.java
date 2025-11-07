@@ -87,6 +87,12 @@ public class RideCost implements Runnable {
 
     instance.mileage = new Mileage();
 
+    loadSavedState(instance);
+
+    return instance;
+  }
+
+  private static void loadSavedState(RideCost instance) {
     try {
       var stateFile = getStateFile();
 
@@ -131,8 +137,6 @@ public class RideCost implements Runnable {
     } catch (IOException exception) {
       LOGGER.log(Level.WARNING, exception.getMessage(), exception);
     }
-
-    return instance;
   }
 
   @VisibleForTesting
