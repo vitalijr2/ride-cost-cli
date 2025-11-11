@@ -250,7 +250,6 @@ public class RideCost implements Runnable {
     }
 
     var stateProperties = new Properties();
-    var version = new RideCostVersion();
 
     saveMileage(stateProperties);
     savePrice(stateProperties);
