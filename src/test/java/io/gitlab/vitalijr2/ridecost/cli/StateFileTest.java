@@ -12,9 +12,11 @@ import static org.mockito.Mockito.verify;
 
 import io.github.vitalijr2.logging.mock.MockLoggers;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
+import java.util.Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -43,10 +45,10 @@ class StateFileTest {
     assertEquals(customParent + "/ridecost.properties", RideCost.getStateFile("HOME").getCanonicalPath());
   }
 
-  @DisplayName("Read state file")
+  @DisplayName("Read from a state file")
   @ParameterizedTest(name = "{0}")
-  @CsvFileSource(resources = "state-file-test.csv", numLinesToSkip = 1, nullValues = "NIL")
-  void readStateFile(String name, BigDecimal expectedDistancePerVolume, BigDecimal expectedVolumePerDistance,
+  @CsvFileSource(resources = "read-state-file-test.csv", numLinesToSkip = 1, nullValues = "NIL")
+  void readFromStateFile(String name, BigDecimal expectedDistancePerVolume, BigDecimal expectedVolumePerDistance,
       BigDecimal expectedPrice, int expectedRoundTo) {
     // given
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
@@ -79,7 +81,48 @@ class StateFileTest {
     }
   }
 
-  @DisplayName("I/O exception")
+  @DisplayName("Save to a state file")
+  @ParameterizedTest(name = "{0}")
+  @CsvFileSource(resources = "save-state-file-test.csv", numLinesToSkip = 1, nullValues = "NIL")
+  void saveToStateFile(String name, BigDecimal expectedDistancePerVolume, BigDecimal expectedVolumePerDistance,
+      BigDecimal expectedPrice, int expectedRoundTo) throws IOException {
+    // given
+    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
+      var tempFile = File.createTempFile(name + '_', ".properties");
+
+      ridecost.when(RideCost::getStateFile).thenReturn(tempFile);
+
+      var instance = new RideCost();
+
+      instance.distance = BigDecimal.valueOf(500);
+      instance.mileage.distancePerVolume = expectedDistancePerVolume;
+      instance.mileage.volumePerDistance = expectedVolumePerDistance;
+      instance.price = expectedPrice;
+      instance.zeroDigits = expectedRoundTo == 0;
+      instance.twoDigits = expectedRoundTo == 2;
+      instance.threeDigits = expectedRoundTo == 3;
+      instance.fourDigits = expectedRoundTo == 4;
+      instance.saveState = true;
+
+      // when
+      instance.run();
+
+      // then
+      var actualState = new Properties();
+
+      actualState.load(new FileReader(tempFile));
+      assertBigDecimalIsNullOrExactValue(expectedDistancePerVolume, actualState.getProperty("distancePerVolume"));
+      assertBigDecimalIsNullOrExactValue(expectedVolumePerDistance, actualState.getProperty("volumePerDistance"));
+      assertBigDecimalIsNullOrExactValue(expectedPrice, actualState.getProperty("price"));
+      if (expectedRoundTo >= 0) {
+        assertEquals(expectedRoundTo, Integer.valueOf(actualState.getProperty("roundTo")));
+      } else {
+        assertFalse(actualState.containsKey("roundTo"));
+      }
+    }
+  }
+
+  @DisplayName("I/O exception while reading")
   @Test
   void exception() {
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
@@ -104,6 +147,14 @@ class StateFileTest {
       assertNull(actualValue);
     } else {
       assertEquals(expectedValue, actualValue);
+    }
+  }
+
+  private void assertBigDecimalIsNullOrExactValue(BigDecimal expectedValue, String actualValue) {
+    if (isNull(expectedValue)) {
+      assertNull(actualValue);
+    } else {
+      assertEquals(expectedValue, new BigDecimal(actualValue));
     }
   }
 
