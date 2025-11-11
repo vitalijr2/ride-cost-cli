@@ -1,5 +1,5 @@
 
 Lists of 3 third-party dependencies.
+     (The Apache Software License, version 2.0) picocli (info.picocli:picocli:4.7.7 - https://picocli.info)
      (Apache License version 2.0) Ride Cost Estimator (io.gitlab.vitalijr2.ridecost:ride-cost-estimator:1.0.0 - https://gitlab.com/vitalijr2/ride-cost-estimator)
-     (Apache License version 2.0) jcommander (org.jcommander:jcommander:3.0 - https://jcommander.org)
      (Apache License version 2.0) JetBrains Java Annotations (org.jetbrains:annotations:26.0.2-1 - https://github.com/JetBrains/java-annotations)

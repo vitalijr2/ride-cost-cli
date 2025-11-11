@@ -1,0 +1,10 @@
+filename,            distancePerVolume, volumePerDistance, price,  roundTo
+distance-per-volume, 123.45,            NIL,               NIL,    -1
+volume-per-distance, NIL,               123.45,            NIL,    -1
+both-ratios,         123.45,            NIL,               NIL,    -1
+price,               NIL,               NIL,               123.45, -1
+round-to-0,          NIL,               NIL,               NIL,     0
+round-to-1,          NIL,               NIL,               NIL,    -1
+round-to-2,          NIL,               NIL,               NIL,     2
+round-to-3,          NIL,               NIL,               NIL,     3
+round-to-4,          NIL,               NIL,               NIL,     4
