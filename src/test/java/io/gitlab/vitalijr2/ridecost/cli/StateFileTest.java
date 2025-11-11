@@ -124,7 +124,7 @@ class StateFileTest {
 
   @DisplayName("I/O exception while reading")
   @Test
-  void exception() {
+  void readingException() {
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
       ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources"));
 
@@ -139,6 +139,31 @@ class StateFileTest {
           () -> assertNull(instance.mileage.volumePerDistance), () -> assertNull(instance.price),
           () -> assertFalse(instance.zeroDigits), () -> assertFalse(instance.twoDigits),
           () -> assertFalse(instance.threeDigits), () -> assertFalse(instance.fourDigits));
+    }
+  }
+
+  @DisplayName("I/O exception while writing")
+  @Test
+  void writingException() {
+    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
+      ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources/qwerty.properties"));
+
+      var instance = new RideCost();
+
+      instance.distance = BigDecimal.valueOf(500);
+      instance.mileage.distancePerVolume = BigDecimal.valueOf(123.45);
+      instance.price = BigDecimal.valueOf(67.89);
+      instance.saveState = true;
+
+      ridecost.when(RideCost::getStateFile).thenReturn(new File("target"));
+
+      // when
+      assertDoesNotThrow(instance::run);
+
+      // then
+      var logger = System.getLogger(RideCost.class.getName());
+
+      verify(logger).log(Level.WARNING, "target (Is a directory)");
     }
   }
 
