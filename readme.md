@@ -33,6 +33,20 @@ Of course, you could use another ratios: miles per gallon, kilometres per litre,
 Full list of options see on the screenshot:  
 ![Usage](ridecost.png)
 
+### Save fuel price and mileage for future use
+
+Starting with version 1.1, you can save the fuel price and mileage using the `--save` or `-s` option:
+
+```bash
+ridecost -s -l 6.3 -p 64.99 475
+```
+
+Next time, simply run the command with the distance only:
+
+```bash
+ridecost 475
+```
+
 ### Where to get
 
 ### Archlinux
