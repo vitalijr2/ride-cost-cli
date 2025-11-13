@@ -261,13 +261,12 @@ public class RideCost implements Runnable {
   }
 
   private void validatePositiveDecimals() {
-    Stream.of(distance, price, distancePerVolume, volumePerDistance).filter(Objects::nonNull)
-        .forEach((value) -> {
-          if (value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new NonPositiveDecimalException(spec.commandLine(),
-                String.format(COMMAND_LINE_BUNDLE.getString("value.non-positive"), value));
-          }
-        });
+    Stream.of(distance, price, distancePerVolume, volumePerDistance).filter(Objects::nonNull).forEach((value) -> {
+      if (value.compareTo(BigDecimal.ZERO) <= 0) {
+        throw new NonPositiveDecimalException(spec.commandLine(),
+            String.format(COMMAND_LINE_BUNDLE.getString("value.non-positive"), value));
+      }
+    });
   }
 
   private void validateOptions() {
@@ -281,7 +280,7 @@ public class RideCost implements Runnable {
       throw new RequiredOptionException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.price"));
     }
     if (isNull(distance)) {
-      throw new RequiredOptionException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.distance"));
+      throw new RequiredParameterException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.distance"));
     }
   }
 
