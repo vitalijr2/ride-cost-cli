@@ -221,6 +221,15 @@
         <version>20240116.0.202508122232</version>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
   <ciManagement>
     <system>GitLab Pipelines</system>

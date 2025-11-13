@@ -58,8 +58,8 @@ class StateFileTest {
       var instance = new RideCost();
 
       // then
-      assertBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.mileage.distancePerVolume);
-      assertBigDecimalIsNullOrExactValue(expectedVolumePerDistance, instance.mileage.volumePerDistance);
+      assertBigDecimalIsNullOrExactValue(expectedDistancePerVolume, instance.distancePerVolume);
+      assertBigDecimalIsNullOrExactValue(expectedVolumePerDistance, instance.volumePerDistance);
       assertBigDecimalIsNullOrExactValue(expectedPrice, instance.price);
       switch (expectedRoundTo) {
         case 0:
@@ -95,8 +95,8 @@ class StateFileTest {
       var instance = new RideCost();
 
       instance.distance = BigDecimal.valueOf(500);
-      instance.mileage.distancePerVolume = expectedDistancePerVolume;
-      instance.mileage.volumePerDistance = expectedVolumePerDistance;
+      instance.distancePerVolume = expectedDistancePerVolume;
+      instance.volumePerDistance = expectedVolumePerDistance;
       instance.price = expectedPrice;
       instance.zeroDigits = expectedRoundTo == 0;
       instance.twoDigits = expectedRoundTo == 2;
@@ -135,8 +135,8 @@ class StateFileTest {
       var logger = System.getLogger(RideCost.class.getName());
 
       verify(logger).log(Level.WARNING, "src/test/resources (Is a directory)");
-      assertAll("Clean bean", () -> assertNull(instance.mileage.distancePerVolume),
-          () -> assertNull(instance.mileage.volumePerDistance), () -> assertNull(instance.price),
+      assertAll("Clean bean", () -> assertNull(instance.distancePerVolume),
+          () -> assertNull(instance.volumePerDistance), () -> assertNull(instance.price),
           () -> assertFalse(instance.zeroDigits), () -> assertFalse(instance.twoDigits),
           () -> assertFalse(instance.threeDigits), () -> assertFalse(instance.fourDigits));
     }
@@ -151,7 +151,7 @@ class StateFileTest {
       var instance = new RideCost();
 
       instance.distance = BigDecimal.valueOf(500);
-      instance.mileage.distancePerVolume = BigDecimal.valueOf(123.45);
+      instance.distancePerVolume = BigDecimal.valueOf(123.45);
       instance.price = BigDecimal.valueOf(67.89);
       instance.saveState = true;
 

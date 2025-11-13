@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import io.gitlab.vitalijr2.ridecost.cli.RideCost.Mileage;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,8 +41,7 @@ public class PositiveDecimalValidationTest {
   void distanceMustBePositive(double distance, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(distance);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
 
     // when
@@ -60,8 +58,7 @@ public class PositiveDecimalValidationTest {
   void priceMustBePositive(double price, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(price);
 
     // when
@@ -78,8 +75,7 @@ public class PositiveDecimalValidationTest {
   void distancePerVolumeMileageMustBePositive(double mileage, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.distancePerVolume = BigDecimal.valueOf(mileage);
+    tool.distancePerVolume = BigDecimal.valueOf(mileage);
     tool.price = BigDecimal.valueOf(59.99);
 
     // when
@@ -96,8 +92,7 @@ public class PositiveDecimalValidationTest {
   void volumePerDistanceMileageMustBePositive(double mileage, String expectedMessage) {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(mileage);
+    tool.volumePerDistance = BigDecimal.valueOf(mileage);
     tool.price = BigDecimal.valueOf(59.99);
 
     // when

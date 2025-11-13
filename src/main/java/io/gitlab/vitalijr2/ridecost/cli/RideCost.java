@@ -38,7 +38,6 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import picocli.CommandLine;
-import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -54,14 +53,19 @@ public class RideCost implements Runnable {
   @Spec
   CommandSpec spec;
 
-  @Parameters(index = "0", paramLabel = "DISTANCE", descriptionKey = "distance", arity = "1")
+  @Parameters(index = "0", paramLabel = "DISTANCE", descriptionKey = "distance", arity = "0")
   BigDecimal distance;
 
-  @Option(names = {"--price", "-p"}, paramLabel = "PRICE", descriptionKey = "price", required = true)
-  BigDecimal price;
+  @Option(names = {"--miles-per-gallon", "-m", "--kilometres-per-litre", "-k", "--mpg",
+      "--kpl"}, paramLabel = "RATIO", descriptionKey = "mileage.distance-per-volume")
+  BigDecimal distancePerVolume;
 
-  @ArgGroup(exclusive = true, multiplicity = "1")
-  Mileage mileage;
+  @Option(names = {"--litres-per-ton-kilometres", "-l", "--gallons-per-ton-miles",
+      "-g"}, paramLabel = "RATIO", descriptionKey = "mileage.volume-per-distance")
+  BigDecimal volumePerDistance;
+
+  @Option(names = {"--price", "-p"}, paramLabel = "PRICE", descriptionKey = "price")
+  BigDecimal price;
 
   @Option(names = "-0", descriptionKey = "round.zero")
   boolean zeroDigits;
@@ -79,8 +83,6 @@ public class RideCost implements Runnable {
   boolean saveState;
 
   public RideCost() {
-    mileage = new Mileage();
-
     try {
       loadState();
     } catch (IOException exception) {
@@ -91,6 +93,7 @@ public class RideCost implements Runnable {
   public static void main(String[] args) {
     var commandLine = new CommandLine(new RideCost());
 
+    commandLine.setExitCodeExceptionMapper(new RideCostExitCodeExceptionMapper());
     commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
     System.exit(commandLine.execute(args));
   }
@@ -111,6 +114,7 @@ public class RideCost implements Runnable {
 
   @Override
   public void run() {
+    validateOptions();
     validatePositiveDecimals();
     System.out.println(estimateRideCost());
 
@@ -122,17 +126,14 @@ public class RideCost implements Runnable {
   }
 
   @VisibleForTesting
-  @NotNull
-  BigDecimal estimateRideCost() {
+  @NotNull BigDecimal estimateRideCost() {
     BigDecimal cost;
 
-    if (isNull(mileage.volumePerDistance)) {
-      cost = RideCostEstimator.distanceByVolumeEstimator()
-          .estimateCostOfRide(mileage.distancePerVolume, price, distance);
+    if (isNull(volumePerDistance)) {
+      cost = RideCostEstimator.distanceByVolumeEstimator().estimateCostOfRide(distancePerVolume, price, distance);
       LOGGER.log(Level.DEBUG, "Estimated cost for distance per volume is " + cost);
     } else {
-      cost = RideCostEstimator.volumeByDistanceEstimator()
-          .estimateCostOfRide(mileage.volumePerDistance, price, distance);
+      cost = RideCostEstimator.volumeByDistanceEstimator().estimateCostOfRide(volumePerDistance, price, distance);
       LOGGER.log(Level.DEBUG, "Estimated cost for volume per distance is " + cost);
     }
     if (zeroDigits) {
@@ -169,11 +170,11 @@ public class RideCost implements Runnable {
 
   private void restoreMileage(Properties stateProperties) {
     if (stateProperties.containsKey("distancePerVolume")) {
-      mileage.distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
-      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", mileage.distancePerVolume);
+      distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
+      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", distancePerVolume);
     } else if (stateProperties.containsKey("volumePerDistance")) {
-      mileage.volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
-      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", mileage.volumePerDistance);
+      volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
+      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", volumePerDistance);
     }
   }
 
@@ -207,12 +208,12 @@ public class RideCost implements Runnable {
   }
 
   private void saveMileage(Properties stateProperties) {
-    if (nonNull(mileage.distancePerVolume)) {
-      stateProperties.setProperty("distancePerVolume", mileage.distancePerVolume.toString());
-      LOGGER.log(Level.DEBUG, "Save distance per volume: {0}", mileage.distancePerVolume);
-    } else if (nonNull(mileage.volumePerDistance)) {
-      stateProperties.setProperty("volumePerDistance", mileage.volumePerDistance.toString());
-      LOGGER.log(Level.DEBUG, "Save volume per distance: {0}", mileage.volumePerDistance);
+    if (nonNull(distancePerVolume)) {
+      stateProperties.setProperty("distancePerVolume", distancePerVolume.toString());
+      LOGGER.log(Level.DEBUG, "Save distance per volume: {0}", distancePerVolume);
+    } else if (nonNull(volumePerDistance)) {
+      stateProperties.setProperty("volumePerDistance", volumePerDistance.toString());
+      LOGGER.log(Level.DEBUG, "Save volume per distance: {0}", volumePerDistance);
     }
   }
 
@@ -258,7 +259,7 @@ public class RideCost implements Runnable {
   }
 
   private void validatePositiveDecimals() {
-    Stream.of(distance, price, mileage.distancePerVolume, mileage.volumePerDistance).filter(Objects::nonNull)
+    Stream.of(distance, price, distancePerVolume, volumePerDistance).filter(Objects::nonNull)
         .forEach((value) -> {
           if (value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new NonPositiveDecimalException(spec.commandLine(),
@@ -267,16 +268,19 @@ public class RideCost implements Runnable {
         });
   }
 
-  static class Mileage {
-
-    @Option(names = {"--miles-per-gallon", "-m", "--kilometres-per-litre", "-k", "--mpg",
-        "--kpl"}, paramLabel = "RATIO", descriptionKey = "mileage.distance-per-volume")
-    BigDecimal distancePerVolume;
-
-    @Option(names = {"--litres-per-ton-kilometres", "-l", "--gallons-per-ton-miles",
-        "-g"}, paramLabel = "RATIO", descriptionKey = "mileage.volume-per-distance")
-    BigDecimal volumePerDistance;
-
+  private void validateOptions() {
+    if (nonNull(distancePerVolume) && nonNull(volumePerDistance)) {
+      throw new ExclusiveOptionException(spec.commandLine(),
+          COMMAND_LINE_BUNDLE.getString("exclusive.two-mileages-simultaneously"));
+    } else if (isNull(distancePerVolume) && isNull(volumePerDistance)) {
+      throw new RequiredOptionException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.any-mileage"));
+    }
+    if (isNull(price)) {
+      throw new RequiredOptionException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.price"));
+    }
+    if (isNull(distance)) {
+      throw new RequiredOptionException(spec.commandLine(), COMMAND_LINE_BUNDLE.getString("required.distance"));
+    }
   }
 
 }
