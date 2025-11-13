@@ -177,8 +177,6 @@ class StateFileTest {
   void stateFileIsNotWritable() {
     // given
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      var stateFile = new File("target/create-and-overwrite.properties");
-
       ridecost.when(RideCost::getStateFile).thenReturn(new File("/dev/null"), new File("/proc/version"));
 
       var instance = new RideCost();
