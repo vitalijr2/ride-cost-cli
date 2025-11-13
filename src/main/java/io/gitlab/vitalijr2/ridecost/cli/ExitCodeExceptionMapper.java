@@ -23,7 +23,7 @@ import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.IExitCodeExceptionMapper;
 import picocli.CommandLine.ParameterException;
 
-public class RideCostExitCodeExceptionMapper implements IExitCodeExceptionMapper {
+public class ExitCodeExceptionMapper implements IExitCodeExceptionMapper {
 
   @Override
   public int getExitCode(Throwable throwable) {

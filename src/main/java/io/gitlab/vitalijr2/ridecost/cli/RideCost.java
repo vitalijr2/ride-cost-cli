@@ -93,7 +93,7 @@ public class RideCost implements Runnable {
   public static void main(String[] args) {
     var commandLine = new CommandLine(new RideCost());
 
-    commandLine.setExitCodeExceptionMapper(new RideCostExitCodeExceptionMapper());
+    commandLine.setExitCodeExceptionMapper(new ExitCodeExceptionMapper());
     commandLine.setResourceBundle(COMMAND_LINE_BUNDLE);
     System.exit(commandLine.execute(args));
   }
