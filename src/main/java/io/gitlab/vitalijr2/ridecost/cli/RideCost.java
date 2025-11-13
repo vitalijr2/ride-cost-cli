@@ -119,7 +119,9 @@ public class RideCost implements Runnable {
     System.out.println(estimateRideCost());
 
     try {
-      saveState();
+      if (saveState) {
+        saveState();
+      }
     } catch (IOException exception) {
       LOGGER.log(Level.WARNING, exception.getMessage());
     }

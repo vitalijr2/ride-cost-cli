@@ -8,7 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.github.vitalijr2.logging.mock.MockLoggers;
 import java.io.File;
@@ -17,16 +21,30 @@ import java.io.IOException;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import java.util.Properties;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mockito;
+import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
 
 @Tag("slow")
 @MockLoggers
 class StateFileTest {
+
+  @AfterAll
+  static void tearDownClass() {
+    var stateFile = new File("target/create-and-overwrite.properties");
+
+    if (stateFile.exists()) {
+      assertTrue(stateFile.delete(), "Could not delete the state file: " + stateFile.getAbsolutePath());
+    }
+  }
 
   @DisplayName("The state file in .local/state")
   @Test
@@ -119,6 +137,62 @@ class StateFileTest {
       } else {
         assertFalse(actualState.containsKey("roundTo"));
       }
+    }
+  }
+
+  @DisplayName("Create a state file and overwrite existed one")
+  @RepeatedTest(2)
+  void createAndOverwrite(RepetitionInfo repetitionInfo) {
+    // given
+    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
+      var stateFile = new File("target/create-and-overwrite.properties");
+
+      if (stateFile.exists() && 0 != repetitionInfo.getCurrentRepetition() % 2) {
+        assumeTrue(stateFile.delete(), "Could not delete the state file: " + stateFile.getAbsolutePath());
+      }
+      ridecost.when(RideCost::getStateFile).thenReturn(stateFile);
+
+      var instance = new RideCost();
+
+      instance.distance = BigDecimal.valueOf(500);
+      instance.volumePerDistance = BigDecimal.valueOf(4.3);
+      instance.price = BigDecimal.valueOf(59.99);
+      if (0 != repetitionInfo.getCurrentRepetition() % 2) {
+        instance.zeroDigits = true;
+      } else {
+        instance.fourDigits = true;
+      }
+      instance.saveState = true;
+      instance.spec = mock(CommandSpec.class);
+
+      when(instance.spec.commandLine()).thenReturn(mock(CommandLine.class));
+
+      // when
+      assertDoesNotThrow(instance::run);
+    }
+  }
+
+  @DisplayName("State file isn't writable")
+  @Test
+  void stateFileIsNotWritable() {
+    // given
+    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
+      var stateFile = new File("target/create-and-overwrite.properties");
+
+      ridecost.when(RideCost::getStateFile).thenReturn(new File("/dev/null"), new File("/proc/version"));
+
+      var instance = new RideCost();
+
+      instance.distance = BigDecimal.valueOf(500);
+      instance.volumePerDistance = BigDecimal.valueOf(4.3);
+      instance.price = BigDecimal.valueOf(59.99);
+      instance.saveState = true;
+      instance.spec = mock(CommandSpec.class);
+
+      when(instance.spec.commandLine()).thenReturn(mock(CommandLine.class));
+
+      // when
+      assertDoesNotThrow(instance::run);
     }
   }
 
