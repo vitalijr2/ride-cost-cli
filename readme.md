@@ -16,17 +16,17 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 ## Table of Contents
 
 <!--ts-->
-   * [How to use](#how-to-use)
-      * [How to run](#how-to-run)
-      * [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use)
-   * [Where to get](#where-to-get)
-      * [Archlinux](#archlinux)
-   * [Contributing](#contributing)
-   * [History](#history)
-   * [License](#license)
+* [How to use](#how-to-use)
+   * [How to run](#how-to-run)
+   * [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use)
+* [Where to get](#where-to-get)
+   * [Archlinux](#archlinux)
+* [Contributing](#contributing)
+* [History](#history)
+* [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: r2, at: Fri Nov 14 10:04:16 AM EET 2025 -->
+<!-- Added by: r2, at: Fri Nov 14 10:59:38 AM EET 2025 -->
 
 <!--te-->
 
