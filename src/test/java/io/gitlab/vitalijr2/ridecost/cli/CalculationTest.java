@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import io.github.vitalijr2.logging.mock.MockLoggers;
-import io.gitlab.vitalijr2.ridecost.cli.RideCost.Mileage;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +27,7 @@ class CalculationTest {
   void roundToWholeNumber() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
     tool.zeroDigits = true;
 
@@ -45,8 +43,7 @@ class CalculationTest {
   void roundToTwoDigits() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
     tool.twoDigits = true;
 
@@ -62,8 +59,7 @@ class CalculationTest {
   void roundToThreeDigits() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
     tool.threeDigits = true;
 
@@ -79,8 +75,7 @@ class CalculationTest {
   void roundToFourDigits() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
     tool.fourDigits = true;
 
@@ -96,8 +91,7 @@ class CalculationTest {
   void distancePerVolume() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.distancePerVolume = BigDecimal.valueOf(23.2);
+    tool.distancePerVolume = BigDecimal.valueOf(23.2);
     tool.price = BigDecimal.valueOf(59.99);
 
     // when
@@ -115,8 +109,7 @@ class CalculationTest {
   void volumePerDistance() {
     // given
     tool.distance = BigDecimal.valueOf(456);
-    tool.mileage = new Mileage();
-    tool.mileage.volumePerDistance = BigDecimal.valueOf(4.3);
+    tool.volumePerDistance = BigDecimal.valueOf(4.3);
     tool.price = BigDecimal.valueOf(59.99);
 
     // when
