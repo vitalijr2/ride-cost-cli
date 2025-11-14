@@ -5,10 +5,11 @@ Mileage-Based Ride Cost Command-Line Tool.
 In addition to the [GitLab page][gl-project], this project can also be found on [GitHub][gh-project].
 
 [![Java Version][java-version]][jdk-download]
-[![License][license-badge]][license-link]  
+[![License][license-badge]][license-link]
+![GitLab Release][gitlab-release]  
 [![GitLab master pipeline][gitlab-master-pipeline]][gitlab-master-pipeline-link]
 [![Codacy Badge][codacy-badge]][codacy-badge-link]
-[![Codacy Coverage][codacy-coverage]][codacy-coverage-link]
+[![Codacy Coverage][codacy-coverage]][codacy-coverage-link]  
 ![GitLab last commit][gitlab-last-commit]
 [![Today's hits][today-hits]][today-hits-link]
 
@@ -109,6 +110,8 @@ See full text [here](LICENSE "the LICENSE file").
 [license-badge]: https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat
 
 [license-link]: https://www.apache.org/licenses/LICENSE-2.0.html
+
+[gitlab-release]: https://img.shields.io/gitlab/v/release/ride-cost%2Fride-cost-cli
 
 [gitlab-master-pipeline]: https://gitlab.com/vitalijr2/ride-cost-estimator/badges/master/pipeline.svg
 
