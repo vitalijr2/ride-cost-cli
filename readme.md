@@ -12,6 +12,23 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 ![GitLab last commit][gitlab-last-commit]
 [![Today's hits][today-hits]][today-hits-link]
 
+## Table of Contents
+
+<!--ts-->
+* [How to use](#how-to-use)
+* [How to run](#how-to-run)
+* [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use)
+* [Where to get](#where-to-get)
+* [Archlinux](#archlinux)
+* [Contributing](#contributing)
+* [History](#history)
+* [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: r2, at: Fri Nov 14 09:08:02 AM EET 2025 -->
+
+<!--te-->
+
 ## How to use
 
 ### How to run
@@ -41,7 +58,7 @@ Starting with version 1.1, you can save the fuel price and mileage using the `--
 ridecost -s -l 6.3 -p 64.99 475
 ```
 
-Next time, simply run the command with the distance only:
+After saving, you can run the command with just the distance:
 
 ```bash
 ridecost 475
