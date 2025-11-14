@@ -13,6 +13,8 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 ![GitLab last commit][gitlab-last-commit]
 [![Today's hits][today-hits]][today-hits-link]
 
+## Table of Contents
+
 <!--ts-->
    * [How to use](#how-to-use)
       * [How to run](#how-to-run)
