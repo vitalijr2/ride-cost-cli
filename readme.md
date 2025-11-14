@@ -41,9 +41,9 @@ ridecost -l 6.3 -p 64.99 475
 
 where:
 
-- **6.3** - fuel efficiency ratio, in litres per 100 kilometres,
-- **64.99** - fuel price,
-- **475** - distance to the destination.
+* **6.3** - fuel efficiency ratio, in litres per 100 kilometres,
+* **64.99** - fuel price,
+* **475** - distance to the destination.
 
 Of course, you could use another ratios: miles per gallon, kilometres per litre, gallons per 100 miles.
 
