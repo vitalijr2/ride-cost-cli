@@ -152,6 +152,7 @@
           </properties>
           <reuseForks>false</reuseForks>
           <systemPropertyVariables>
+            <java.util.logging.config.file>${project.basedir}/src/test/resources/test-logging.properties</java.util.logging.config.file>
             <maven.project.version>${project.version}</maven.project.version>
           </systemPropertyVariables>
         </configuration>
@@ -177,7 +178,7 @@
           </archive>
         </configuration>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>3.4.2</version>
+        <version>3.5.0</version>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -220,6 +221,15 @@
         <version>20240116.0.202508122232</version>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
   <ciManagement>
     <system>GitLab Pipelines</system>
@@ -256,6 +266,15 @@
       <scope>test</scope>
       <version>2.0.2</version>
     </dependency>
+    <!--
+    jUnit Pioneer 2.*.* hasn't been compatible with Java 17 and jUnit 6 yet.
+    <dependency>
+      <groupId>org.junit-pioneer</groupId>
+      <artifactId>junit-pioneer</artifactId>
+      <scope>test</scope>
+      <version>2.3.0</version>
+    </dependency>
+    -->
     <dependency>
       <artifactId>mockito-core</artifactId>
       <groupId>org.mockito</groupId>
@@ -369,7 +388,7 @@
                   <inceptionYear>${project.inceptionYear}</inceptionYear>
                   <!-- @formatter:off -->
                   <licenseMerges>
-                    <licenseMerge>Apache License version 2.0|The Apache Software License, Version 2.0|The Apache License, Version 2.0|Apache License, Version 2.0|Apache-2.0|Apache 2</licenseMerge>
+                    <licenseMerge>Apache License version 2.0|The Apache Software License, version 2.0|The Apache Software License, Version 2.0|Apache 2</licenseMerge>
                   </licenseMerges>
                   <licenseName>apache_v2</licenseName>
                   <!-- @formatter:on -->
@@ -412,5 +431,5 @@
     <url>https://gitlab.com/ride-cost/ride-cost-cli</url>
   </scm>
   <url>https://gitlab.com/ride-cost/ride-cost-cli</url>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </project>
