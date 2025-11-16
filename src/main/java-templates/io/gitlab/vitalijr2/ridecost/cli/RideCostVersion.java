@@ -19,13 +19,9 @@
  */
 package io.gitlab.vitalijr2.ridecost.cli;
 
-import picocli.CommandLine.IVersionProvider;
+public class RideCostVersion {
 
-public class RideCostVersion implements IVersionProvider {
-
-  @Override
-  public String[] getVersion() throws Exception {
-    return new String[]{"${COMMAND-FULL-NAME} @project.version@"};
-  }
+  public static final String COMMAND_NAME = "@command.name@";
+  public static final String VERSION = "@project.version@";
 
 }

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import picocli.CommandLine;
 import picocli.CommandLine.Model.CommandSpec;
@@ -28,9 +26,14 @@ public class PositiveDecimalValidationTest {
   @Mock
   private CommandSpec spec;
 
+  private RideCost instance;
+
   @BeforeEach
   void setUp() {
     when(spec.commandLine()).thenReturn(commandLine);
+
+    instance = new RideCost();
+    instance.spec = spec;
   }
 
   @DisplayName("Distance must be positive")
@@ -39,25 +42,16 @@ public class PositiveDecimalValidationTest {
       "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void distanceMustBePositive(double distance, String expectedMessage) throws IOException {
     // given
-    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      var tempFile = File.createTempFile("distance_must_be_positive_", ".properties");
+    instance.distance = BigDecimal.valueOf(distance);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.spec = spec;
 
-      ridecost.when(RideCost::getStateFile).thenReturn(tempFile);
+    // when
+    var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
 
-      var instance = new RideCost();
-
-      instance.distance = BigDecimal.valueOf(distance);
-      instance.volumePerDistance = BigDecimal.valueOf(4.3);
-      instance.price = BigDecimal.valueOf(59.99);
-      instance.spec = spec;
-
-      // when
-      var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
-
-      // then
-      assertEquals(expectedMessage, exceptional.getMessage());
-    }
-
+    // then
+    assertEquals(expectedMessage, exceptional.getMessage());
   }
 
   @DisplayName("Price must be positive")
@@ -66,24 +60,16 @@ public class PositiveDecimalValidationTest {
       "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void priceMustBePositive(double price, String expectedMessage) throws IOException {
     // given
-    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      var tempFile = File.createTempFile("price_must_be_positive_", ".properties");
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(price);
+    instance.spec = spec;
 
-      ridecost.when(RideCost::getStateFile).thenReturn(tempFile);
+    // when
+    var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
 
-      var instance = new RideCost();
-
-      instance.distance = BigDecimal.valueOf(456);
-      instance.volumePerDistance = BigDecimal.valueOf(4.3);
-      instance.price = BigDecimal.valueOf(price);
-      instance.spec = spec;
-
-      // when
-      var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
-
-      // then
-      assertEquals(expectedMessage, exceptional.getMessage());
-    }
+    // then
+    assertEquals(expectedMessage, exceptional.getMessage());
   }
 
   @DisplayName("Distance-per-volume mileage must be positive")
@@ -92,24 +78,16 @@ public class PositiveDecimalValidationTest {
       "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void distancePerVolumeMileageMustBePositive(double mileage, String expectedMessage) throws IOException {
     // given
-    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      var tempFile = File.createTempFile("mileage_must_be_positive_", ".properties");
+    instance.distance = BigDecimal.valueOf(456);
+    instance.distancePerVolume = BigDecimal.valueOf(mileage);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.spec = spec;
 
-      ridecost.when(RideCost::getStateFile).thenReturn(tempFile);
+    // when
+    var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
 
-      var instance = new RideCost();
-
-      instance.distance = BigDecimal.valueOf(456);
-      instance.distancePerVolume = BigDecimal.valueOf(mileage);
-      instance.price = BigDecimal.valueOf(59.99);
-      instance.spec = spec;
-
-      // when
-      var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
-
-      // then
-      assertEquals(expectedMessage, exceptional.getMessage());
-    }
+    // then
+    assertEquals(expectedMessage, exceptional.getMessage());
   }
 
   @DisplayName("Volume-per-distance mileage must be positive")
@@ -118,24 +96,16 @@ public class PositiveDecimalValidationTest {
       "-1|Must be a positive value, but got -1.0"}, delimiter = '|')
   void volumePerDistanceMileageMustBePositive(double mileage, String expectedMessage) throws IOException {
     // given
-    try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      var tempFile = File.createTempFile("mileage_must_be_positive_", ".properties");
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(mileage);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.spec = spec;
 
-      ridecost.when(RideCost::getStateFile).thenReturn(tempFile);
+    // when
+    var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
 
-      var instance = new RideCost();
-
-      instance.distance = BigDecimal.valueOf(456);
-      instance.volumePerDistance = BigDecimal.valueOf(mileage);
-      instance.price = BigDecimal.valueOf(59.99);
-      instance.spec = spec;
-
-      // when
-      var exceptional = assertThrows(NonPositiveDecimalException.class, instance::run);
-
-      // then
-      assertEquals(expectedMessage, exceptional.getMessage());
-    }
+    // then
+    assertEquals(expectedMessage, exceptional.getMessage());
   }
 
 }

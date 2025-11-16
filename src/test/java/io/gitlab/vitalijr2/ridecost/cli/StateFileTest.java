@@ -50,17 +50,32 @@ class StateFileTest {
   @Test
   void localState() throws IOException {
     // when and then
-    assertThat(RideCost.getStateFile("****").getCanonicalPath(), endsWith("/.local/state/ridecost.properties"));
+    assertThat(RideCost.getStateFile("****", "****").getCanonicalPath(), endsWith("/.local/state/ridecost.properties"));
+  }
+
+  @DisplayName("The custom state file from the environment variable")
+  @Test
+  void customStateFile() throws IOException {
+    // when and then
+    assertThat(RideCost.getStateFile().getCanonicalPath(), endsWith("/src/test/resources/empty.properties"));
+  }
+
+  @DisplayName("The custom state file doesn't exist")
+  @Test
+  void customStateFileDoesntExist() throws IOException {
+    // when and then
+    assertThat(RideCost.getStateFile("RIDECOST_STATE_DOESNT_EXIST", "****").getCanonicalPath(),
+        endsWith("/.local/state/ridecost.properties"));
   }
 
   @DisplayName("The state file in a custom folder")
   @Test
-  void customState() throws IOException {
+  void customStateFolder() throws IOException {
     // given
     var customParent = System.getProperty("user.home");
 
     // when and then
-    assertEquals(customParent + "/ridecost.properties", RideCost.getStateFile("HOME").getCanonicalPath());
+    assertEquals(customParent + "/ridecost.properties", RideCost.getStateFile("****", "HOME").getCanonicalPath());
   }
 
   @DisplayName("Read from a state file")
@@ -197,6 +212,7 @@ class StateFileTest {
   @DisplayName("I/O exception while reading")
   @Test
   void readingException() {
+    // given
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
       ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources"));
 
@@ -217,8 +233,9 @@ class StateFileTest {
   @DisplayName("I/O exception while writing")
   @Test
   void writingException() {
+    // given
     try (var ridecost = Mockito.mockStatic(RideCost.class)) {
-      ridecost.when(RideCost::getStateFile).thenReturn(new File("src/test/resources/qwerty.properties"));
+      ridecost.when(RideCost::getStateFile).thenReturn(new File("/dev/null"), new File("target"));
 
       var instance = new RideCost();
 
@@ -226,8 +243,6 @@ class StateFileTest {
       instance.distancePerVolume = BigDecimal.valueOf(123.45);
       instance.price = BigDecimal.valueOf(67.89);
       instance.saveState = true;
-
-      ridecost.when(RideCost::getStateFile).thenReturn(new File("target"));
 
       // when
       assertDoesNotThrow(instance::run);

@@ -143,6 +143,10 @@
           <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}
             -javaagent:${com.ginsberg:junit5-system-exit:jar}
           </argLine>
+          <environmentVariables>
+            <RIDECOST_STATE>src/test/resources/empty.properties</RIDECOST_STATE>
+            <RIDECOST_STATE_DOESNT_EXIST>ridecost.properties</RIDECOST_STATE_DOESNT_EXIST>
+          </environmentVariables>
           <forkCount>1</forkCount>
           <includes>
             <include>**/*Test.java</include>
@@ -151,10 +155,6 @@
             <groups>slow</groups>
           </properties>
           <reuseForks>false</reuseForks>
-          <systemPropertyVariables>
-            <java.util.logging.config.file>${project.basedir}/src/test/resources/test-logging.properties</java.util.logging.config.file>
-            <maven.project.version>${project.version}</maven.project.version>
-          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -419,6 +419,7 @@
     </profile>
   </profiles>
   <properties>
+    <command.name>ridecost</command.name>
     <java.version>17</java.version>
     <junit.version>6.0.1</junit.version>
     <mock-loggers.version>2.0.0</mock-loggers.version>
@@ -431,5 +432,5 @@
     <url>https://gitlab.com/ride-cost/ride-cost-cli</url>
   </scm>
   <url>https://gitlab.com/ride-cost/ride-cost-cli</url>
-  <version>1.1.0</version>
+  <version>1.1.1-SNAPSHOT</version>
 </project>
