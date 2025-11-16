@@ -19,6 +19,8 @@
  */
 package io.gitlab.vitalijr2.ridecost.cli;
 
+import static io.gitlab.vitalijr2.ridecost.cli.RideCostVersion.COMMAND_NAME;
+import static io.gitlab.vitalijr2.ridecost.cli.RideCostVersion.VERSION;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -44,7 +46,10 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
-@Command(name = "ridecost", mixinStandardHelpOptions = true, requiredOptionMarker = '*', versionProvider = RideCostVersion.class)
+@Command(name = COMMAND_NAME, mixinStandardHelpOptions = true, requiredOptionMarker = '*', version = {
+    COMMAND_NAME + ' ' + VERSION, "picocli " + CommandLine.VERSION,
+    "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
+    "OS: ${os.name} ${os.version} ${os.arch}"})
 public class RideCost implements Runnable {
 
   private static final Logger LOGGER = System.getLogger(RideCost.class.getName());
@@ -101,12 +106,22 @@ public class RideCost implements Runnable {
   @VisibleForTesting
   @NotNull
   static File getStateFile() {
-    return getStateFile("XDG_STATE_HOME");
+    return getStateFile("RIDECOST_STATE", "XDG_STATE_HOME");
   }
 
   @VisibleForTesting
   @NotNull
-  static File getStateFile(String stateFolderName) {
+  static File getStateFile(String stateVariableName, String stateFolderName) {
+    var stateFileName = System.getenv(stateVariableName);
+
+    if (nonNull(stateFileName)) {
+      var stateFile = new File(stateFileName);
+
+      if (stateFile.exists()) {
+        return stateFile;
+      }
+    }
+
     var stateFolder = System.getenv().getOrDefault(stateFolderName, System.getProperty("user.home") + "/.local/state");
 
     return new File(stateFolder, "ridecost.properties");
@@ -257,7 +272,7 @@ public class RideCost implements Runnable {
     saveMileage(stateProperties);
     savePrice(stateProperties);
     saveRounding(stateProperties);
-    stateProperties.store(new FileWriter(stateFile), "ridecost");
+    stateProperties.store(new FileWriter(stateFile), COMMAND_NAME + ' ' + VERSION);
   }
 
   private void validatePositiveDecimals() {
