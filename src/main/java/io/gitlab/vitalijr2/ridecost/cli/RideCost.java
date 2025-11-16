@@ -47,7 +47,7 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 @Command(name = COMMAND_NAME, mixinStandardHelpOptions = true, requiredOptionMarker = '*', version = {
-    COMMAND_NAME + ' ' + VERSION, "picocli " + picocli.CommandLine.VERSION,
+    COMMAND_NAME + ' ' + VERSION, "picocli " + CommandLine.VERSION,
     "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
     "OS: ${os.name} ${os.version} ${os.arch}"})
 public class RideCost implements Runnable {
