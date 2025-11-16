@@ -272,7 +272,7 @@ public class RideCost implements Runnable {
     saveMileage(stateProperties);
     savePrice(stateProperties);
     saveRounding(stateProperties);
-    stateProperties.store(new FileWriter(stateFile), "ridecost");
+    stateProperties.store(new FileWriter(stateFile), COMMAND_NAME + ' ' + VERSION);
   }
 
   private void validatePositiveDecimals() {
