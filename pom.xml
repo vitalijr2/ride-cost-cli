@@ -307,7 +307,7 @@
     <dependency>
       <artifactId>ride-cost-estimator</artifactId>
       <groupId>io.gitlab.vitalijr2.ridecost</groupId>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
     </dependency>
   </dependencies>
   <description>Mileage-Based Ride Cost Command-Line Tool</description>
