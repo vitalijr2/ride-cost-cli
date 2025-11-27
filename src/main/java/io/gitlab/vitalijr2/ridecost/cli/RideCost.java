@@ -25,6 +25,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import io.gitlab.vitalijr2.ridecost.estimator.RideCostEstimator;
+import io.gitlab.vitalijr2.ridecost.estimator.RideCostEstimator.Rounding;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -87,6 +87,9 @@ public class RideCost implements Runnable {
   @Option(names = {"--save", "-s"}, descriptionKey = "state.save")
   boolean saveState;
 
+  @VisibleForTesting
+  RideCostEstimator.Rounding rounding;
+
   public RideCost() {
     try {
       loadState();
@@ -131,6 +134,7 @@ public class RideCost implements Runnable {
   public void run() {
     validateOptions();
     validatePositiveDecimals();
+    resolveRounding();
     System.out.println(estimateRideCost());
 
     try {
@@ -147,27 +151,34 @@ public class RideCost implements Runnable {
     BigDecimal cost;
 
     if (isNull(volumePerDistance)) {
-      cost = RideCostEstimator.distanceByVolumeEstimator().estimateCostOfRide(distancePerVolume, price, distance);
+      cost = RideCostEstimator.distanceByVolumeEstimator()
+          .estimateCostOfRide(distancePerVolume, price, distance, rounding);
       LOGGER.log(Level.DEBUG, "Estimated cost for distance per volume is " + cost);
     } else {
-      cost = RideCostEstimator.volumeByDistanceEstimator().estimateCostOfRide(volumePerDistance, price, distance);
+      cost = RideCostEstimator.volumeByDistanceEstimator()
+          .estimateCostOfRide(volumePerDistance, price, distance, rounding);
       LOGGER.log(Level.DEBUG, "Estimated cost for volume per distance is " + cost);
-    }
-    if (zeroDigits) {
-      cost = cost.setScale(0, RoundingMode.HALF_UP);
-      LOGGER.log(Level.DEBUG, "Round to a whole number: {0}", cost);
-    } else if (twoDigits) {
-      cost = cost.setScale(2, RoundingMode.HALF_UP);
-      LOGGER.log(Level.DEBUG, "Round to two digits: {0}", cost);
-    } else if (threeDigits) {
-      cost = cost.setScale(3, RoundingMode.HALF_UP);
-      LOGGER.log(Level.DEBUG, "Round to three digits: {0}", cost);
-    } else if (fourDigits) {
-      cost = cost.setScale(4, RoundingMode.HALF_UP);
-      LOGGER.log(Level.DEBUG, "Round to four digits: {0}", cost);
     }
 
     return cost;
+  }
+
+  @VisibleForTesting
+  void resolveRounding() {
+    if (zeroDigits) {
+      rounding = Rounding.WHOLE;
+    } else if (twoDigits) {
+      rounding = Rounding.TWO_DECIMAL_PLACES;
+    } else if (threeDigits) {
+      rounding = Rounding.THREE_DECIMAL_PLACES;
+    } else if (fourDigits) {
+      rounding = Rounding.FOUR_DECIMAL_PLACES;
+    }
+    if (nonNull(rounding)) {
+      LOGGER.log(Level.DEBUG, rounding.roundingDescription + " is used");
+    } else {
+      LOGGER.log(Level.DEBUG, "Exact value is used");
+    }
   }
 
   private void loadState() throws IOException {
@@ -188,39 +199,31 @@ public class RideCost implements Runnable {
   private void restoreMileage(Properties stateProperties) {
     if (stateProperties.containsKey("distancePerVolume")) {
       distancePerVolume = new BigDecimal(stateProperties.getProperty("distancePerVolume"));
-      LOGGER.log(Level.DEBUG, "Saved distance per volume: {0}", distancePerVolume);
+      LOGGER.log(Level.DEBUG, "Restore distance per volume: {0}", distancePerVolume);
     } else if (stateProperties.containsKey("volumePerDistance")) {
       volumePerDistance = new BigDecimal(stateProperties.getProperty("volumePerDistance"));
-      LOGGER.log(Level.DEBUG, "Saved volume per distance: {0}", volumePerDistance);
+      LOGGER.log(Level.DEBUG, "Restore volume per distance: {0}", volumePerDistance);
     }
   }
 
   private void restorePrice(Properties stateProperties) {
     if (stateProperties.containsKey("price")) {
       price = new BigDecimal(stateProperties.getProperty("price"));
-      LOGGER.log(Level.DEBUG, "Saved price: {0}", price);
+      LOGGER.log(Level.DEBUG, "Restore price: {0}", price);
     }
   }
 
   private void restoreRounding(Properties stateProperties) {
-    switch (stateProperties.getProperty("roundTo", "*")) {
-      case "0" -> {
-        zeroDigits = true;
-        LOGGER.log(Level.DEBUG, "Restore rounding to zero digits");
+    try {
+      rounding = Rounding.valueOf(Integer.parseInt(stateProperties.getProperty("roundTo", "*")));
+      if (isNull(rounding)) {
+        LOGGER.log(Level.DEBUG, "Inappropriate rounding: {0}",
+            Integer.parseInt(stateProperties.getProperty("roundTo")));
+      } else {
+        LOGGER.log(Level.DEBUG, rounding.roundingDescription + " is restored");
       }
-      case "2" -> {
-        twoDigits = true;
-        LOGGER.log(Level.DEBUG, "Restore rounding to two digits");
-      }
-      case "3" -> {
-        threeDigits = true;
-        LOGGER.log(Level.DEBUG, "Restore rounding to three digits");
-      }
-      case "4" -> {
-        fourDigits = true;
-        LOGGER.log(Level.DEBUG, "Restore rounding to four digits");
-      }
-      default -> LOGGER.log(Level.DEBUG, "Exact value is used");
+    } catch (NumberFormatException exception) {
+      LOGGER.log(Level.DEBUG, "Rounding isn't saved");
     }
   }
 
@@ -240,18 +243,9 @@ public class RideCost implements Runnable {
   }
 
   private void saveRounding(Properties stateProperties) {
-    if (zeroDigits) {
-      stateProperties.put("roundTo", "0");
-      LOGGER.log(Level.DEBUG, "Save rounding to zero digits");
-    } else if (twoDigits) {
-      stateProperties.put("roundTo", "2");
-      LOGGER.log(Level.DEBUG, "Save rounding to two digits");
-    } else if (threeDigits) {
-      stateProperties.put("roundTo", "3");
-      LOGGER.log(Level.DEBUG, "Save rounding to three digits");
-    } else if (fourDigits) {
-      stateProperties.put("roundTo", "4");
-      LOGGER.log(Level.DEBUG, "Save rounding to four digits");
+    if (nonNull(rounding)) {
+      stateProperties.put("roundTo", Integer.toString(rounding.decimalPlaces));
+      LOGGER.log(Level.DEBUG, rounding.roundingDescription + " is saved");
     }
   }
 
