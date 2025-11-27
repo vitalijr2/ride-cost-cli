@@ -18,15 +18,18 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 <!--ts-->
 * [How to use](#how-to-use)
   * [How to run](#how-to-run)
+  * [Rounding](#rounding)
   * [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use)
 * [Where to get](#where-to-get)
   * [Archlinux](#archlinux)
+* [Known issues](#known-issues)
+  * [Mutually exclusive values in the state file and command line option](#mutually-exclusive-values-in-the-state-file-and-command-line-option)
 * [Contributing](#contributing)
 * [History](#history)
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: r2, at: Fri Nov 14 12:02:31 PM EET 2025 -->
+<!-- Added by: r2, at: Thu Nov 27 09:57:40 PM EET 2025 -->
 
 <!--te-->
 
