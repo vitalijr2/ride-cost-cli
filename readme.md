@@ -62,7 +62,7 @@ just add one of the options `-0`, `-2`, `-3`, or `-4` accordingly.
 
 ### Save fuel price and mileage for future use
 
-Starting with version 1.1, you can save the fuel price and mileage using the `--save` or `-s` option:
+Starting with version **1.1**, you can save the fuel price and mileage using the `--save` or `-s` option:
 
 ```bash
 ridecost -s -l 6.3 -p 64.99 475
