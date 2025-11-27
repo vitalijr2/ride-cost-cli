@@ -39,7 +39,7 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 
 To calculate the estimated ride cost, provide the fuel efficiency ratio, fuel price, and distance:
 
-```bash
+```shell
 ridecost -l 6.3 -p 64.99 475
 ```
 
@@ -64,13 +64,13 @@ just add one of the options `-0`, `-2`, `-3`, or `-4` accordingly.
 
 Starting with version **1.1**, you can save the fuel price and mileage using the `--save` or `-s` option:
 
-```bash
+```shell
 ridecost -s -l 6.3 -p 64.99 475
 ```
 
 After saving, you can run the command with just the distance:
 
-```bash
+```shell
 ridecost 475
 ```
 
