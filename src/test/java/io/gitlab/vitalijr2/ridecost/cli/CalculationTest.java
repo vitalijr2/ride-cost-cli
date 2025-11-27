@@ -25,6 +25,25 @@ class CalculationTest {
     instance = new RideCost();
   }
 
+  @DisplayName("Without rounding")
+  @Test
+  void withoutRounding() {
+    // given
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+
+    // when
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
+
+    // then
+    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
+
+    assertEquals(BigDecimal.valueOf(1176.28392), cost);
+  }
+
   @DisplayName("Round to a whole number")
   @Test
   void roundToWholeNumber() {
@@ -35,12 +54,12 @@ class CalculationTest {
     instance.zeroDigits = true;
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then
-    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
-    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
-    verify(LOGGER).log(Level.DEBUG, "Round to a whole number: {0}", cost);
+    verify(LOGGER).log(Level.DEBUG, "Round to a whole number is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176");
 
     assertEquals(BigDecimal.valueOf(1176), cost);
   }
@@ -55,12 +74,12 @@ class CalculationTest {
     instance.twoDigits = true;
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then
-    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
-    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
-    verify(LOGGER).log(Level.DEBUG, "Round to two digits: {0}", cost);
+    verify(LOGGER).log(Level.DEBUG, "Round to two digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28");
 
     assertEquals(BigDecimal.valueOf(1176.28), cost);
   }
@@ -75,12 +94,12 @@ class CalculationTest {
     instance.threeDigits = true;
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then
-    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
-    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
-    verify(LOGGER).log(Level.DEBUG, "Round to three digits: {0}", cost);
+    verify(LOGGER).log(Level.DEBUG, "Round to three digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.284");
 
     assertEquals(BigDecimal.valueOf(1176.284), cost);
   }
@@ -95,12 +114,12 @@ class CalculationTest {
     instance.fourDigits = true;
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then
-    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
-    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
-    verify(LOGGER).log(Level.DEBUG, "Round to four digits: {0}", cost);
+    verify(LOGGER).log(Level.DEBUG, "Round to four digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.2839");
 
     assertEquals(BigDecimal.valueOf(1176.2839), cost);
   }
@@ -114,6 +133,7 @@ class CalculationTest {
     instance.price = BigDecimal.valueOf(59.99);
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then
@@ -131,6 +151,7 @@ class CalculationTest {
     instance.price = BigDecimal.valueOf(59.99);
 
     // when
+    instance.resolveRounding();
     var cost = instance.estimateRideCost();
 
     // then

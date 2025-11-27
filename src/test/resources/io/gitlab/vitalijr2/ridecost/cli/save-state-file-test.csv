@@ -1,6 +1,6 @@
-filename,            distancePerVolume, volumePerDistance, price,  roundTo
-round-to-0,          123.45,            NIL,               56.78,   0
-round-to-1,          NIL,               56.79,             123.45, -1
-round-to-2,          56.78,             NIL,               123.45,  2
-round-to-3,          NIL,               123.45,            56.79,   3
-round-to-4,          321.45,            NIL,               87.65,   4
+filename,            distancePerVolume, volumePerDistance, price,  rounding,             message
+round-to-0,          123.45,            NIL,               56.78,  WHOLE,                Round to a whole number is saved
+round-to-1,          NIL,               56.79,             123.45, NIL,                  NIL
+round-to-2,          56.78,             NIL,               123.45, TWO_DECIMAL_PLACES,   Round to two digits is saved
+round-to-3,          NIL,               123.45,            56.79,  THREE_DECIMAL_PLACES, Round to three digits is saved
+round-to-4,          321.45,            NIL,               87.65,  FOUR_DECIMAL_PLACES,  Round to four digits is saved

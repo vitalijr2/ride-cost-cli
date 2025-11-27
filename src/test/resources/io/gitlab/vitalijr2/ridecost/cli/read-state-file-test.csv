@@ -1,10 +1,10 @@
-filename,            distancePerVolume, volumePerDistance, price,  roundTo
-distance-per-volume, 123.45,            NIL,               NIL,    -1
-volume-per-distance, NIL,               123.45,            NIL,    -1
-both-ratios,         123.45,            NIL,               NIL,    -1
-price,               NIL,               NIL,               123.45, -1
-round-to-0,          NIL,               NIL,               NIL,     0
-round-to-1,          NIL,               NIL,               NIL,    -1
-round-to-2,          NIL,               NIL,               NIL,     2
-round-to-3,          NIL,               NIL,               NIL,     3
-round-to-4,          NIL,               NIL,               NIL,     4
+filename,            distancePerVolume, volumePerDistance, price,  rounding,             message,                             scale
+distance-per-volume, 123.45,            NIL,               NIL,    NIL,                  Rounding isn't saved,                NIL
+volume-per-distance, NIL,               123.45,            NIL,    NIL,                  Rounding isn't saved,                NIL
+both-ratios,         123.45,            NIL,               NIL,    NIL,                  Rounding isn't saved,                NIL
+price,               NIL,               NIL,               123.45, NIL,                  Rounding isn't saved,                NIL
+round-to-0,          NIL,               NIL,               NIL,    WHOLE,                Round to a whole number is restored, NIL
+round-to-1,          NIL,               NIL,               NIL,    NIL,                  Inappropriate rounding: {0},         1
+round-to-2,          NIL,               NIL,               NIL,    TWO_DECIMAL_PLACES,   Round to two digits is restored,     NIL
+round-to-3,          NIL,               NIL,               NIL,    THREE_DECIMAL_PLACES, Round to three digits is restored,   NIL
+round-to-4,          NIL,               NIL,               NIL,    FOUR_DECIMAL_PLACES,  Round to four digits is restored,    NIL
