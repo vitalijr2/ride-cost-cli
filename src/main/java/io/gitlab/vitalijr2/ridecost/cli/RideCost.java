@@ -231,7 +231,7 @@ public class RideCost implements Runnable {
     if (nonNull(distancePerVolume)) {
       stateProperties.setProperty("distancePerVolume", distancePerVolume.toString());
       LOGGER.log(Level.DEBUG, "Save distance per volume: {0}", distancePerVolume);
-    } else if (nonNull(volumePerDistance)) {
+    } else {
       stateProperties.setProperty("volumePerDistance", volumePerDistance.toString());
       LOGGER.log(Level.DEBUG, "Save volume per distance: {0}", volumePerDistance);
     }
