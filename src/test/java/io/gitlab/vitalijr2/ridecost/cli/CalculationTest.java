@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import io.github.vitalijr2.logging.mock.MockLoggers;
+import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,26 +16,51 @@ import org.junit.jupiter.api.Test;
 @MockLoggers
 class CalculationTest {
 
-  private RideCost tool;
+  private static final Logger LOGGER = System.getLogger(RideCost.class.getName());
+
+  private RideCost instance;
 
   @BeforeEach
   void setUp() {
-    tool = new RideCost();
+    instance = new RideCost();
+  }
+
+  @DisplayName("Without rounding")
+  @Test
+  void withoutRounding() {
+    // given
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+
+    // when
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
+
+    // then
+    verify(LOGGER).log(Level.DEBUG, "Exact value is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
+
+    assertEquals(BigDecimal.valueOf(1176.28392), cost);
   }
 
   @DisplayName("Round to a whole number")
   @Test
   void roundToWholeNumber() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.volumePerDistance = BigDecimal.valueOf(4.3);
-    tool.price = BigDecimal.valueOf(59.99);
-    tool.zeroDigits = true;
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.zeroDigits = true;
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
+    verify(LOGGER).log(Level.DEBUG, "Round to a whole number is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176");
+
     assertEquals(BigDecimal.valueOf(1176), cost);
   }
 
@@ -42,15 +68,19 @@ class CalculationTest {
   @Test
   void roundToTwoDigits() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.volumePerDistance = BigDecimal.valueOf(4.3);
-    tool.price = BigDecimal.valueOf(59.99);
-    tool.twoDigits = true;
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.twoDigits = true;
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
+    verify(LOGGER).log(Level.DEBUG, "Round to two digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28");
+
     assertEquals(BigDecimal.valueOf(1176.28), cost);
   }
 
@@ -58,15 +88,19 @@ class CalculationTest {
   @Test
   void roundToThreeDigits() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.volumePerDistance = BigDecimal.valueOf(4.3);
-    tool.price = BigDecimal.valueOf(59.99);
-    tool.threeDigits = true;
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.threeDigits = true;
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
+    verify(LOGGER).log(Level.DEBUG, "Round to three digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.284");
+
     assertEquals(BigDecimal.valueOf(1176.284), cost);
   }
 
@@ -74,15 +108,19 @@ class CalculationTest {
   @Test
   void roundToFourDigits() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.volumePerDistance = BigDecimal.valueOf(4.3);
-    tool.price = BigDecimal.valueOf(59.99);
-    tool.fourDigits = true;
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
+    instance.fourDigits = true;
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
+    verify(LOGGER).log(Level.DEBUG, "Round to four digits is used");
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.2839");
+
     assertEquals(BigDecimal.valueOf(1176.2839), cost);
   }
 
@@ -90,17 +128,17 @@ class CalculationTest {
   @Test
   void distancePerVolume() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.distancePerVolume = BigDecimal.valueOf(23.2);
-    tool.price = BigDecimal.valueOf(59.99);
+    instance.distance = BigDecimal.valueOf(456);
+    instance.distancePerVolume = BigDecimal.valueOf(23.2);
+    instance.price = BigDecimal.valueOf(59.99);
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
-    var logger = System.getLogger(RideCost.class.getName());
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for distance per volume is 1179.1136483");
 
-    verify(logger).log(Level.DEBUG, "Estimated cost for distance per volume is 1179.1136483");
     assertEquals(BigDecimal.valueOf(1179.1136483), cost, "Estimated cost for distance per volume");
   }
 
@@ -108,17 +146,17 @@ class CalculationTest {
   @Test
   void volumePerDistance() {
     // given
-    tool.distance = BigDecimal.valueOf(456);
-    tool.volumePerDistance = BigDecimal.valueOf(4.3);
-    tool.price = BigDecimal.valueOf(59.99);
+    instance.distance = BigDecimal.valueOf(456);
+    instance.volumePerDistance = BigDecimal.valueOf(4.3);
+    instance.price = BigDecimal.valueOf(59.99);
 
     // when
-    var cost = tool.estimateRideCost();
+    instance.resolveRounding();
+    var cost = instance.estimateRideCost();
 
     // then
-    var logger = System.getLogger(RideCost.class.getName());
+    verify(LOGGER).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
 
-    verify(logger).log(Level.DEBUG, "Estimated cost for volume per distance is 1176.28392");
     assertEquals(BigDecimal.valueOf(1176.28392), cost, "Estimated cost for volume per distance");
   }
 

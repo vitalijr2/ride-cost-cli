@@ -18,15 +18,18 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 <!--ts-->
 * [How to use](#how-to-use)
   * [How to run](#how-to-run)
+  * [Rounding](#rounding)
   * [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use)
 * [Where to get](#where-to-get)
   * [Archlinux](#archlinux)
+* [Known issues](#known-issues)
+  * [Mutually exclusive values in the state file and command line option](#mutually-exclusive-values-in-the-state-file-and-command-line-option)
 * [Contributing](#contributing)
 * [History](#history)
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: r2, at: Fri Nov 14 12:02:31 PM EET 2025 -->
+<!-- Added by: r2, at: Thu Nov 27 09:57:40 PM EET 2025 -->
 
 <!--te-->
 
@@ -36,7 +39,7 @@ In addition to the [GitLab page][gl-project], this project can also be found on 
 
 To calculate the estimated ride cost, provide the fuel efficiency ratio, fuel price, and distance:
 
-```bash
+```shell
 ridecost -l 6.3 -p 64.99 475
 ```
 
@@ -51,25 +54,46 @@ Of course, you could use another ratios: miles per gallon, kilometres per litre,
 Full list of options see on the screenshot:  
 ![Usage](ridecost.png)
 
+### Rounding
+
+Of course, you don't need more precision than the coins in circulation.
+You can round the result to a whole number or to 2, 3, or 4 decimal places:
+just add one of the options `-0`, `-2`, `-3`, or `-4` accordingly.
+
 ### Save fuel price and mileage for future use
 
-Starting with version 1.1, you can save the fuel price and mileage using the `--save` or `-s` option:
+Starting with version **1.1**, you can save the fuel price and mileage using the `--save` or `-s` option:
 
-```bash
+```shell
 ridecost -s -l 6.3 -p 64.99 475
 ```
 
 After saving, you can run the command with just the distance:
 
-```bash
+```shell
 ridecost 475
 ```
+
+The default location of the state file is `~/.local/state/ridecost.properties`.
+The tool checks the **XDG_STATE_HOME** environment variable, if it is set.
+You can specify an alternative location using the **RIDECOST_STATE** environment variable.
 
 ## Where to get
 
 ### Archlinux
 
 Just install the AUR package [ridecost][ridecost-AUR] ☺
+
+## Known issues
+
+### Mutually exclusive values in the state file and command line option
+
+If you have previously saved, for example, MPG and then use the `--gallons-per-ton-miles` option,
+the program fails with a warning message because these options are checked for mutual exclusivity.
+To fix this, remove the saved state.
+See [Save fuel price and mileage for future use](#save-fuel-price-and-mileage-for-future-use).
+This issue is on [GitLab](https://gitlab.com/ride-cost/ride-cost-cli/-/issues/3)
+and [GitHub](https://github.com/vitalijr2/ride-cost-cli/issues/17).
 
 ## Contributing
 
