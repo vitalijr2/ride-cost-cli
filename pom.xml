@@ -309,6 +309,24 @@
       <groupId>io.gitlab.vitalijr2.ridecost</groupId>
       <version>1.1.1</version>
     </dependency>
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <optional>true</optional>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>slf4j-jdk-platform-logging</artifactId>
+      <groupId>org.slf4j</groupId>
+      <optional>true</optional>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.slf4j</groupId>
+      <optional>true</optional>
+      <version>${slf4j.version}</version>
+    </dependency>
   </dependencies>
   <description>Mileage-Based Ride Cost Command-Line Tool</description>
   <developers>
@@ -425,6 +443,7 @@
     <mock-loggers.version>2.0.1</mock-loggers.version>
     <mockito.version>5.20.0</mockito.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4j.version>2.0.17</slf4j.version>
   </properties>
   <scm>
     <connection>scm:git:https://gitlab.com/ride-cost/ride-cost-cli.git</connection>

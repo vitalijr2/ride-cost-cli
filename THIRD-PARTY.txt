@@ -1,5 +1,8 @@
 
-Lists of 3 third-party dependencies.
+Lists of 6 third-party dependencies.
      (Apache License version 2.0) picocli (info.picocli:picocli:4.7.7 - https://picocli.info)
      (Apache License version 2.0) Ride Cost Estimator (io.gitlab.vitalijr2.ridecost:ride-cost-estimator:1.1.1 - https://gitlab.com/ride-cost/ride-cost-estimator)
      (Apache License version 2.0) JetBrains Java Annotations (org.jetbrains:annotations:26.0.2-1 - https://github.com/JetBrains/java-annotations)
+     (MIT) SLF4J API Module (org.slf4j:slf4j-api:2.0.17 - http://www.slf4j.org)
+     (MIT) SLF4J JDK Platform Logging Integration (org.slf4j:slf4j-jdk-platform-logging:2.0.17 - https://www.slf4j.org)
+     (MIT) SLF4J Simple Provider (org.slf4j:slf4j-simple:2.0.17 - http://www.slf4j.org)
